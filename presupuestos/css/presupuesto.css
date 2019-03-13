@@ -1,0 +1,344 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 18/01/2019, 07:23:43 PM
+    Author     : José Alfredo Jimenez Sanchez
+*/
+
+.logiwn{
+    background-color: #fff;
+    margin-top: 15%;
+    text-align: center;
+    padding-bottom: 40px;
+    border-radius: 10px 10px 0px 0px;
+}
+.login img{
+    margin-left: -webkit-calc(50% - 90px);
+    margin-left: -moz-calc(50% - 90px);
+    margin-left: calc(50% - 90px);
+    margin-top: 40px;
+}
+.logo{
+    text-align: center;
+}
+.postLogin{
+    background-color: #fff;
+    margin-top: 8px;
+    padding-top: 20px;
+    text-align: center;
+    border-radius: 0px 0px 10px 10px;
+}
+.postLogin p{
+    font-size: 8pt;
+}
+.text-inf{
+    color: #31708f !important;
+}
+.b-back{
+    background-color: #f5f5f5 !important;
+}
+.bg-striped {
+    background: repeating-linear-gradient(135deg,transparent,transparent 5px,hsla(0,0%,70%,.03) 0,hsla(0,0%,70%,.03) 10px) hsla(0,0%,70%,.03);
+}
+.sombra-3 {
+    -webkit-box-shadow: 0 6px 10px 0 rgba(0,0,0,0.14), 0 1px 18px 0 rgba(0,0,0,0.12), 0 3px 5px -1px rgba(0,0,0,0.3);
+    box-shadow: 0 6px 10px 0 rgba(0,0,0,0.14), 0 1px 18px 0 rgba(0,0,0,0.12), 0 3px 5px -1px rgba(0,0,0,0.3);
+}
+.form-control:focus {
+    border-color: #0d47a1!important;
+}
+.user-info{
+    background: none !important;
+    padding: 0 !important;
+}
+.user-info div{
+    /**background: url(../img/logos/logo.png) no-repeat no-repeat !important;**/
+    margin-left: 40px;
+    margin-top: 9px;
+    width: 100%;
+    height: 100%;
+}
+.menu .list li a i{
+        margin-top: 10px !important;
+}
+.min_mod{
+  min-height: 100px;
+}
+.min_mod p{
+  padding-top: 40px;
+  padding-bottom: 40px;
+  text-align: center;
+}
+.tema{
+    padding-right: 20px;
+    padding-bottom: 5px;
+    cursor: pointer;
+    margin-right: 2px;
+}
+.block{
+    width: 100% !important;
+}
+.sweet-alert button.cancel {
+    background-color: #F44336 !important;
+}
+.sweet-alert button {
+    background-color: #2196F3 !important;
+    text-transform: uppercase;
+}
+.c_pass,.salir_bt{
+    cursor: pointer;
+}
+.pas_lod p{
+    text-align: center;
+}
+#titulo_general{
+    text-transform: uppercase;
+}
+.paginas{
+    text-align: right;
+    margin-right: 30px;
+}
+.detail{
+    cursor: pointer;
+}
+.detail:hover{
+    background-color: #e0e0e0;
+}
+.nuevobt{
+  margin-top: 10px;
+}
+.iconsic{
+  width: 150px;
+  height: 150px;
+}
+.inputImg{
+  display: none !important;
+}
+.inputReplace{
+  cursor: pointer;
+  margin-top: 50px;
+  margin-left: 15px;
+}
+.filesel{
+  padding: .5rem !important;
+}
+.filesel div div{
+  margin-left: 15px;
+}
+.imgfortable{
+  height: 50px;
+  width: 50px;
+}
+.icon-t{
+  text-align: center;
+  width: 40px;
+}
+/*Additional properties for button version
+ iOS requires the button element instead of an anchor tag.
+ If you want the anchor version, it requires `href="#"`.*/
+.toast {
+  background-color: #030303;
+}
+.toast-white {
+  background-color: #ffffff !important;
+}
+.toast-snow {
+  background-color: #fbfbfb !important;
+}
+.toast-whitesmoke {
+  background-color: #f5f5f5 !important;
+}
+.toast-seashell {
+  background-color: #f3f3f3 !important;
+}
+.toast-ivory {
+  background-color: #eeeeee !important;
+}
+.toast-platinum {
+  background-color: #e5e5e5 !important;
+}
+.toast-lightgray {
+  background-color: #d0d0d0 !important;
+}
+.toast-gray {
+  background-color: #cccccc !important;
+}
+.toast-darkgray {
+  background-color: #999999 !important;
+}
+.toast-silver {
+  background-color: #777777 !important;
+}
+.toast-sonic-silver {
+  background-color: #737373 !important;
+}
+.toast-storm-cloud {
+  background-color: #666666 !important;
+}
+.toast-lightcarbon {
+  background-color: #555555 !important;
+}
+.toast-carbon {
+  background-color: #444444 !important;
+}
+.toast-slate-gray {
+  background-color: #333333 !important;
+}
+.toast-darkcarbon {
+  background-color: #262626 !important;
+}
+.toast-blue {
+  background-color: #5db2ff !important;
+}
+.toast-info {
+  background-color: #57b5e3 !important;
+}
+.toast-sky {
+  background-color: #11a9cc !important;
+}
+.toast-primary {
+  background-color: #4374e0 !important;
+}
+.toast-blueberry {
+  background-color: #6f85bf !important;
+}
+.toast-palegreen {
+  background-color: #a0d468 !important;
+}
+.toast-success {
+  background-color: #53a93f !important;
+}
+.toast-green {
+  background-color: #8cc474 !important;
+}
+.toast-lightyellow {
+  background-color: #f6d52e !important;
+}
+.toast-yellow {
+  background-color: #ffce55 !important;
+}
+.toast-warning {
+  background-color: #f4b400 !important;
+}
+.toast-gold {
+  background-color: #f9b256 !important;
+}
+.toast-orange {
+  background-color: #fb6e52 !important;
+}
+.toast-lightred {
+  background-color: #e46f61 !important;
+}
+.toast-darkorange {
+  background-color: #ed4e2a !important;
+}
+.toast-red {
+  background-color: #df5138 !important;
+}
+.toast-danger {
+  background-color: #d73d32 !important;
+}
+.toast-pink {
+  background-color: #e75b8d !important;
+}
+.toast-darkpink {
+  background-color: #cc324b !important;
+}
+.toast-magenta {
+  background-color: #bc5679 !important;
+}
+.toast-purple {
+  background-color: #7e3794 !important;
+}
+.toast-maroon {
+  background-color: #981b48 !important;
+}
+/*
+*Color de los temas, aplicado a elemntos que seran del mismo color
+*/
+.theme-red .theme{
+  background-color: #F44336 !important;
+  color: #fff; 
+}
+.theme-pink .theme{
+  background-color: #E91E63 !important;
+  color: #fff; 
+}
+.theme-purple .theme{
+  background-color: #9C27B0 !important;
+  color: #fff; 
+}
+.theme-deep-purple .theme{
+  background-color: #673AB7 !important;
+  color: #fff; 
+}
+.theme-indigo .theme{
+  background-color: #3F51B5 !important;
+  color: #fff;
+}
+.theme-blue .theme{
+  background-color: #2196F3 !important;
+  color: #fff; 
+}
+.theme-light-blue .theme{
+  background-color: #03A9F4 !important;
+  color: #fff; 
+}
+.theme-cyan .theme{
+  background-color: #00BCD4 !important;
+  color: #fff; 
+}
+.theme-teal .theme{
+  background-color: #009688 !important;
+  color: #fff; 
+}
+.theme-green .theme{
+  background-color: #4CAF50 !important;
+  color: #fff; 
+}
+.theme-light-green .theme{
+  background-color: #8BC34A !important;
+  color: #fff; 
+}
+.theme-lime .theme{
+  background-color: #CDDC39 !important;
+  color: #fff; 
+}
+.theme-yellow .theme{
+  background-color: #ffe821 !important;
+  color: #fff; 
+}
+.theme-amber .theme{
+  background-color: #FFC107 !important;
+  color: #fff; 
+}
+.theme-orange .theme{
+  background-color: #FF9800 !important;
+  color: #fff; 
+}
+.theme-deep-orange .theme{
+  background-color: #FF5722 !important;
+  color: #fff; 
+}
+.theme-brown .theme{
+  background-color: #795548 !important;
+  color: #fff; 
+}
+.theme-grey .theme{
+  background-color: #9E9E9E !important;
+  color: #fff; 
+}
+.theme-blue-grey .theme{
+  background-color: #607D8B !important;
+  color: #fff; 
+}
+.theme-black .theme{
+  background-color: #000000 !important;
+  color: #fff; 
+}
+.theme-white .theme{
+  background-color: #ffffff !important;
+}
