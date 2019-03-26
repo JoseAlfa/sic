@@ -144,12 +144,12 @@ define ('PDF_MARGIN_BOTTOM', 25);
 /**
  * Left margin.
  */
-define ('PDF_MARGIN_LEFT', 15);
+define ('PDF_MARGIN_LEFT', 20);
 
 /**
  * Right margin.
  */
-define ('PDF_MARGIN_RIGHT', 15);
+define ('PDF_MARGIN_RIGHT', 20);
 
 /**
  * Default main font name.
