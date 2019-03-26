@@ -32,10 +32,10 @@ class Report extends CI_Controller {
         $this->load->library('Pdf');
         $pdf = new Pdf('P', 'mm', 'A4', true, 'UTF-8', false);
         $pdf->SetCreator(PDF_CREATOR);
-        $pdf->SetAuthor('Israel Parra');
-        $pdf->SetTitle('Ejemplo de provincías con TCPDF');
-        $pdf->SetSubject('Tutorial TCPDF');
-        $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+        $pdf->SetAuthor('SIC');
+        $pdf->SetTitle('Presupuesto');
+        $pdf->SetSubject('Soluciones Integrales y comunicación');
+        $pdf->SetKeywords('none');
  
 		// datos por defecto de cabecera, se pueden modificar en el archivo tcpdf_config_alt.php de libraries/config
 		// datos por defecto de cabecera, se pueden modificar en el archivo tcpdf_config.php de libraries/config
@@ -65,7 +65,7 @@ class Report extends CI_Controller {
  
 		//Si tienes que imprimir carácteres ASCII estándar, puede utilizar las fuentes básicas como
 		// Helvetica para reducir el tamaño del archivo.
-        $pdf->SetFont('freemono', '', 14, '', true);
+        $pdf->SetFont('times', '', 14, '', true);
  
 		// Añadir una página
 		// Este método tiene varias opciones, consulta la documentación para más información.
@@ -83,12 +83,12 @@ class Report extends CI_Controller {
         //preparamos y maquetamos el contenido a crear
         $html = '';
         $html .= "<style type=text/css>";
-        $html .= "th{color: #fff; font-weight: bold; background-color: #222}";
-        $html .= "td{background-color: #AAC7E3; color: #fff}";
+        $html .= "";
+        $html .= "";
         $html .= "</style>";
         //$html .= "<h2>Localidades de ".$prov."</h2><h4>Actualmente: ".count($provincias)." localidades</h4>";
-        $html .= "<table width='100%'>";
-        $html .= "<tr><th>Id localidad</th><th>Localidades</th></tr>";
+        $html .= '<img src="./img/logos/logo.png" width="210">';
+        $html .= '<div width="200px"><b>Andador Antoni Soler #114</b><br><b>Col Infonavid Atasta C.P. 86100</b><br><b>Villahermosa, Centro, Tabasco</b></div>';
         
         //provincias es la respuesta de la función getProvinciasSeleccionadas($provincia) del modelo
         /*foreach ($provincias as $fila) 
@@ -98,7 +98,7 @@ class Report extends CI_Controller {
  
             $html .= "<tr><td class='id'>" . $id . "</td><td class='localidad'>" . $localidad . "</td></tr>";
         }*/
-        $html .= "</table>";
+        //$html .= "</table>";
  
 // Imprimimos el texto con writeHTMLCell()
         $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $html, $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = '', $autopadding = true);
