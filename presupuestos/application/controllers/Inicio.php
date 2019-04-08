@@ -22,12 +22,18 @@ class Inicio extends CI_Controller {
     public function index()	{///Función pricipal que carga las vistas determinando si hay una sesión iniciada o no
         $id= $this->session->userdata('iduser');
         if ($id) {
-            #$this->session->sess_destroy();
-            $parametros=array('user' => $this->datosUsuarioSesion($this->session->userdata('iduser')), 'person' => $this->datosUsuario($this->session->userdata('idperson')));//Parametros necearios al momento de cargar la vista
-            $this->load->view('inicio',$parametros); 
+            $userdata=$this->datosUsuarioSesion($this->session->userdata('iduser'));
+            $parametros=array('user' => $userdata, 'person' => $this->datosUsuario($this->session->userdata('idperson')));//Parametros necearios al momento de cargar la vista
+            $admin=$userdata['admin'];
+            if ($admin==1) {
+                $this->load->view('inicio',$parametros);
+            }else{
+                $this->load->view('normal',$parametros);
+            }
+             
         }else{
            $this->load->view('login'); 
-        }        
+        }     
     }
     /*****************************************************************************************************/
     /**Funciones pertinentes a la validación de usuario y contraseña, necesarios para un inicio de sesión*/
@@ -102,7 +108,7 @@ class Inicio extends CI_Controller {
         $consulta=$this->modelo->userdataSes($idusuario);//consulta a base de datos que envia el parametro de id
         if ($consulta!=null) {//si consulta es diferente de null
             foreach ($consulta as $valor) {//recorrido del contenido de la consulta
-               $retornar= array('nombre'=>$valor->nom,'color'=>$valor->col,'idpersona'=>$valor->idp);//datos a retornar
+               $retornar= array('nombre'=>$valor->nom,'color'=>$valor->col,'idpersona'=>$valor->idp,'admin'=>$valor->adm);//datos a retornar
             }
         }
         return $retornar;//retorno de datos
@@ -201,6 +207,9 @@ class Inicio extends CI_Controller {
             case 'tipPro':
                 $consulta=$this->modelo->tipProCount($ref);
                 break;
+            case 'producto':
+                $consulta=$this->modelo->proCount($ref);
+                break;
             default:
                 # code...
                 break;
@@ -212,8 +221,21 @@ class Inicio extends CI_Controller {
         }
         return $retornar;
     }
-    function isAdmin($iduser){//Verific si es administrador el usuario
-        return true;
+    function isAdmin($iduser,$admin=false){//Verific si es administrador el usuario
+        $permiso=false;
+        $consulta=$this->modelo->userdataSes($iduser);
+        if ($consulta!=null) {
+            foreach ($consulta as $valor) {
+                if ($admin) {
+                    if ($valor->adm==1) {
+                        $permiso=true;
+                    }
+                }else{
+                    $permiso=true;
+                }
+            }
+        }
+        return $permiso;
     }
     /*************************************************************************/
     /**Fin deFunciones generales para uso general de el resto de los modulos**/
@@ -507,7 +529,7 @@ class Inicio extends CI_Controller {
                                 $m='La marca no fue eliminada';
                             }
                         }else{
-                            $m='La marca no pudo ser eliminada debido a que hay '.$dependencias.' productos que dependen de ella';
+                            $m='El tipo de producto no pudo ser eliminado debido a que hay '.$dependencias.' productos que dependen de este';
                         }
                     }else{
                         $m='Imposible realizar operación';
@@ -536,6 +558,8 @@ class Inicio extends CI_Controller {
                         $det=$this->input->post('detalles',true);
                         $tip=$this->input->post('tipo',true);
                         $mar=$this->input->post('marca',true);
+                        $pre=$this->input->post('precio',true);
+                        $med=$this->input->post('medida',true);
                         if ($this->validar($nom)) {
                             if ($this->validar($cve)) {
                                 if (!($tip==""||$tip=="undefined"||$tip=="0")) {
@@ -548,7 +572,7 @@ class Inicio extends CI_Controller {
                                 }
                             }
                         }
-                        $toInsert=array('imagen' =>'' , 'nombre' => $nom , 'clave'=>$cve,'detalles' =>$det,'id_tipo' => $tip,'id_marca'=>$mar );///datos a insertar
+                        $toInsert=array('imagen' =>'' , 'nombre' => $nom , 'clave'=>$cve,'detalles' =>$det,'id_tipo' => $tip,'id_marca'=>$mar,'precio'=>$pre,'medida'=>$med  );///datos a insertar
                         $dirIMG="";///imagena insetar
                         if ($con) {
                             if ($_FILES['inputImg']['name']) {
@@ -592,7 +616,7 @@ class Inicio extends CI_Controller {
                                      }
                                      $this->image_lib->clear();
                                 }
-                            }
+                            }else{$toInsert['imagen']='producto.png';}
                             if ($this->modelo->newPro($toInsert)) {
                                 $o=1;$m="El producto se gurardó correctamente";$sw="success";$swh="Completo";
                                 if (count($dirIMG)==0) {
@@ -699,6 +723,40 @@ class Inicio extends CI_Controller {
         }
         return $ret;
     }
+    public function deletePro(){
+        if ($this->input->is_ajax_request()) {
+            $idu=$this->session->userdata('iduser');
+            $m="";$o=2;$con=false;$sw="error";$swh="Error";
+            if ($idu) {
+                if ($this->isAdmin($idu)) {
+                    $ref=$this->input->post('referencia',true);
+                    if ($this->validar($ref)) {
+                        $con=true;
+                    }
+                    if ($con) {
+                        if ($this->isDepend('producto',$ref)) {
+                            $m="Por razones de seguridad, este producto no puede ser eliminado.";
+                        }else{
+                            if ($this->modelo->remPro($ref)) {
+                                $m="Los datos se eliminaron correctamente";$sw="success";$swh="Completo";$o=1;
+                            }else{
+                                $m=getError('insert');
+                            }
+                        }
+                    }else{//si no se recibieron todos los parametros
+                        $m=getError('parametros');
+                    }
+                }else{//si no tiene permisos
+                    $m=getError('acceso');
+                }
+            }else{//si no hay sessio
+                $m=getError('sesion');
+            }
+            echo json_encode(array('o'=>$o,'t'=>$swh,'m'=>$m,'sw'=>$sw));
+        }else{
+            $this->load->view(getError('ajax'));
+        }
+    }
     public function updatedataPro(){
         if ($this->input->is_ajax_request()) {
             $idu=$this->session->userdata('iduser');
@@ -711,6 +769,8 @@ class Inicio extends CI_Controller {
                     $det=$this->input->post('detalles',true);
                     $tip=$this->input->post('tipo',true);
                     $mar=$this->input->post('marca',true);
+                    $pre=$this->input->post('precio',true);
+                    $med=$this->input->post('medida',true);
                     if ($this->validar($nom)) {
                         if ($this->validar($cve)) {
                             if (!($tip==""||$tip=="undefined"||$tip=="0")) {
@@ -726,7 +786,7 @@ class Inicio extends CI_Controller {
                         }
                     }
                     if ($con) {
-                        $toInsert=array('nombre' => $nom , 'clave'=>$cve,'detalles' =>$det,'id_tipo' => $tip,'id_marca'=>$mar );///datos a insertar
+                        $toInsert=array('nombre' => $nom , 'clave'=>$cve,'detalles' =>$det,'id_tipo' => $tip,'id_marca'=>$mar,'precio'=>$pre,'medida'=>$med );///datos a insertar
                         if ($this->modelo->updatePro($toInsert,$ref)) {
                             $m="Los datos se actualizaron correctamente";$sw="success";$swh="Completo";$o=1;
                         }else{
@@ -759,13 +819,19 @@ class Inicio extends CI_Controller {
                     $dir=$this->input->post('direccion',true);
                     $em=$this->input->post('tipo',true);
                     $ver=$this->input->post('mostrar',true);
+                    $cp=$this->input->post('cp',true);
+                    $atn=$this->input->post('atn',true);
                     if ($this->validar($nom)) {
                         if ($this->validar($cor)) {
                             if ($this->validar($tel)) {
                                 if ($this->validar($dir)) {
                                     if ($em!=null && $em!='undefined') {
                                         if ($ver!=null  && $ver!='undefined') {
-                                            $con=true;
+                                            if ($this->validar($cp)) {
+                                                #if ($this->validar($atn)) {
+                                                    $con=true;
+                                                #}
+                                            }
                                         }
                                     }
                                 }
@@ -773,7 +839,7 @@ class Inicio extends CI_Controller {
                         }
                     }
                     if ($con) {
-                        $data=array('nombre'=>$nom,'correo'=>$cor,'telefono'=>$tel,'direccion'=>$dir,'empresa'=>$em,'mostrar'=>$ver);
+                        $data=array('nombre'=>$nom,'correo'=>$cor,'telefono'=>$tel,'direccion'=>$dir,'empresa'=>$em,'mostrar'=>$ver,'cp'=>$cp,'atn'=>$atn);
                         if ($this->modelo->newCliente($data) ) {
                             $m="Los datos se guardaron correctamente";$o=1;$sw='success';$swh="Completo";
                         }else{
@@ -806,6 +872,8 @@ class Inicio extends CI_Controller {
                     $em=$this->input->post('tipo',true);
                     $ver=$this->input->post('mostrar',true);
                     $ref=$this->input->post('referencia',true);
+                    $cp=$this->input->post('cp',true);
+                    $atn=$this->input->post('atn',true);
                     if ($this->validar($nom)) {
                         if ($this->validar($cor)) {
                             if ($this->validar($tel)) {
@@ -813,7 +881,11 @@ class Inicio extends CI_Controller {
                                     if ($em!=null&&$em!='undefined') {
                                         if ($ver!=null&&$ver!='undefined') {
                                             if ($this->validar($ref)) {
-                                                $con=true;
+                                                if ($this->validar($cp)) {
+                                                    #if ($this->validar($atn)) {
+                                                        $con=true;
+                                                    #}
+                                                }
                                             }                                            
                                         }
                                     }
@@ -822,7 +894,7 @@ class Inicio extends CI_Controller {
                         }
                     }
                     if ($con) {
-                        $data=array('nombre'=>$nom,'correo'=>$cor,'telefono'=>$tel,'direccion'=>$dir,'empresa'=>$em,'mostrar'=>$ver);
+                        $data=array('nombre'=>$nom,'correo'=>$cor,'telefono'=>$tel,'direccion'=>$dir,'empresa'=>$em,'mostrar'=>$ver,'cp'=>$cp,'atn'=>$atn);
                         if ($this->modelo->updateCliente($ref,$data) ) {
                             $m="Los datos se guardaron correctamente";$o=1;$sw='success';$swh="Completo";
                         }else{
@@ -838,6 +910,145 @@ class Inicio extends CI_Controller {
                 $m=getError('sesion');
             }
             echo json_encode(array('o'=>$o,'t'=>$swh,'m'=>$m,'sw'=>$sw));
+        }else{
+            $this->load->view(getError('ajax'));
+        }
+    }
+    /////////////////////////////////////////////////////////////////////////777
+    ////////////Fnciones para presupestos///////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+
+    public function nuevoPresupuesto(){
+        if ($this->input->is_ajax_request()) {
+            $idu=$this->session->userdata('iduser');
+            $m="";$o=true;$con=false;$sw="error";$swh="Error";$ref=0;
+            $clave="SICPRE00";
+            if ($idu) {
+                if ($this->isAdmin($idu)) {
+                    $nom=$this->input->post('detalle',true);
+                    $as=$this->input->post('as',true);
+                    if ($this->validar($nom)) {
+                        $con=true;
+                    }
+                    if ($con) {
+                        $data=array('id_usuario'=>$idu,'detalles'=>$nom,'plantilla'=>$as);
+                        $ref=$this->modelo->nuevoPresupuesto($data);
+                        if ($ref) {
+                            $clave.=$ref;
+                            $this->modelo->updatePresupuesto($ref,array('clave'=>$clave));
+                            $m="Perfecto, ahora completa los datos del prespuesto.";$o=false;$sw='success';$swh="Completo";
+                        }else{
+                            $m=getError('insert');
+                        }
+                    }else{
+                        $m=getError('parametros');
+                    }
+                }else{//si no tiene permisos
+                    $m=getError('acceso');
+                }
+            }else{//si no hay sessio
+                $m=getError('sesion');
+            }
+            echo json_encode(array('error'=>$o,'t'=>$swh,'m'=>$m,'sw'=>$sw,'ref'=>$ref));
+        }else{
+            $this->load->view(getError('ajax'));
+        }
+    }
+    public function uddategeneralInPre() {
+        if ($this->input->is_ajax_request()) {
+            $idu=$this->session->userdata('iduser');
+            $m="";$o=true;$con=false;$sw="red";$swh="Error";$ref=0;
+            if ($idu) {
+                if ($this->isAdmin($idu,false)) {
+                    $nom=$this->input->post('detalle',true);
+                    $cliente=$this->input->post('cliente',true);
+                    $ref=$this->input->post('ref',true);
+                    $pago=$this->input->post('pago',true);
+                    $vencimiento=$this->input->post('vencimiento',true);
+                    $iva=$this->input->post('iva',true);
+                    $data=array();
+                    if($ref){
+                        if($this->validar($cliente)){
+                            $data['id_cliente']=$cliente;
+                            $con=true;
+                        }
+                        if ($this->validar($nom)) {
+                            $data['detalles']=$nom;
+                            $con=true;
+                        }
+                        if($this->validar($pago)){
+                            $data['forma_pago']=$pago;
+                            $con=true;
+                        }
+                        if ($this->validar($vencimiento)) {
+                            $data['vencimiento']=$vencimiento;
+                            $con=true;
+                        }
+                        if ($this->validar($iva)) {
+                            $data['iva']=$iva;
+                            $con=true;
+                        }
+                    }                 
+                    if ($con) {
+                        $ref=$this->modelo->updatePresupuesto($ref,$data);
+                        if ($ref) {
+                            $m="Datos actualizados correctamente.";$o=false;$sw='green';$swh="Completo";
+                        }else{
+                            $m=getError('insert');
+                        }
+                    }else{
+                        $m=getError('parametros');
+                    }
+                }else{//si no tiene permisos
+                    $m=getError('acceso');
+                }
+            }else{//si no hay sessio
+                $m=getError('sesion');
+            }
+            echo json_encode(array('error'=>$o,'t'=>$swh,'m'=>$m,'sw'=>$sw,'ref'=>$ref));
+        }else{
+            $this->load->view(getError('ajax'));
+        }
+    }
+    public function saveProductosInPre() {
+        if ($this->input->is_ajax_request()) {
+            $idu=$this->session->userdata('iduser');
+            $m="";$o=true;$con=false;$sw="red";$swh="Error";$ref=0;
+            if ($idu) {
+                if ($this->isAdmin($idu,false)) {
+                    $pro=$this->input->post('pro',true);
+                    $pre=$this->input->post('pre',true);
+                    $precio=$this->input->post('precio',true);
+                    $cantidad=$this->input->post('cantidad',true);
+                    if(true){
+                        if($this->validar($precio)){
+                            if ($this->validar($cantidad)) {
+                                if ($this->validar($pro)) {
+                                    if ($this->validar($pre)) {
+                                        $con=true;
+                                    }
+                                }
+                            }
+                        }
+                    }                 
+                    if ($con) {
+                        $data=array('id_producto'=>$pro,'id_presupuesto'=>$pre,'precio'=>$precio,'cantidad'=>$cantidad);
+                        $ref=$this->modelo->newProInpre($data);
+                        if ($ref) {
+                            $m="Datos actualizados correctamente.";$o=false;$sw='green';$swh="Completo";
+                        }else{
+                            $m=getError('insert');
+                        }
+                    }else{
+                        $m=getError('parametros');
+                    }
+                }else{//si no tiene permisos
+                    $m=getError('acceso');
+                }
+            }else{//si no hay sessio
+                $m=getError('sesion');
+            }
+            echo json_encode(array('error'=>$o,'t'=>$swh,'m'=>$m,'sw'=>$sw,'ref'=>$ref));
         }else{
             $this->load->view(getError('ajax'));
         }
