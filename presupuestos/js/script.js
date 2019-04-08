@@ -62,6 +62,7 @@
 	rel:function () {
 		window.location.reload();
 	},
+	idpreinwindow:0,
 	changePS:function () {
 		$('.pas_lod').fadeIn();
 		ps=$("#ps").val();
@@ -146,6 +147,35 @@
         	}
         	$(div).html('<div class="alert '+clase+' alert-dismissible animated fadeInDown"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>'+msg+'</div>');
       	}
+    },
+    loadJS:function (el) {
+    	data=el.data("detalle");
+    	cansee=el.data("see");
+    	ini=el.data("inicio");
+    	fin=el.data("fin");
+    	ref=el.data("ref");
+    	$("#nuevo_modal").modal('show');
+    	$(".nuevo_load").fadeIn();
+    	html='<div class="modal-header"><div class="row"></div><h3 class="modal-title">Detalles</h3></div><div class="modal-body"><div class="row">';
+    	try{
+    		//data=$.parseJSON(data);
+    		html+='<div class="col-xs-12 col-sm-6 col-md-4"><b>Fecha de inicio: </b>'+ini+'</div>';
+    		html+='<div class="col-xs-12 col-sm-6 col-md-4"><b>Fecha de fin: </b>'+fin+'</div>';
+    		html+='<div class="col-xs-12 col-sm-6 col-md-4"><b>Cliente: </b>'+data.cliente+'</div>';
+    		html+='<div class="col-xs-12 col-sm-6 col-md-4"><b>Forma de pago: </b>'+data.pago+'</div>';
+    		html+='<div class="col-xs-12 col-sm-6 col-md-4"><b>Vencimiento: </b>'+data.ven+'</div>';
+    		if(cansee){
+    			html+='<div class="col-xs-12 col-sm-6 col-md-4"><b>Credor de este presupuesto: </b>'+data.nom+' '+data.ap+'</div>';
+    		}
+    		html+='<a href="./Report/generar?ref='+ref+'" target="_blank" class="waves-effect btn theme print">Ver PDF</a>';
+
+    	}catch(e){
+    		console.log(e);
+    		html+='Ocurrió un error';
+    	}
+    	html+='</div></div><div class="modal-footer"><button type="button" class="btn bg-red waves-effect" data-dismiss="modal">CERRAR</button></div>';
+    	setTimeout(function() {$("#nuevo_panel").html(html);$(".nuevo_load").fadeOut();}, 2000);
+    	console.log(data);
     }
 };
 $(document).ready(function() {
@@ -161,6 +191,7 @@ $(document).ready(function() {
 			$("#cl").click();
 		}
 	});
+	$.sic.load('getPresupuestos','Recientes');
 	/*fin panel*/
 	$(".ajuestes_bt").click(function(event) {
 		event.preventDefault();
@@ -195,7 +226,7 @@ $(document).ready(function() {
 					swal("Hecho", "La sesión fue cerrada", "success");
 					setTimeout(function () {
 				        $.sic.rel();
-				    }, 2000);
+				    }, 1500);
 				},
 				error:function (qw,er,th) {
 					swal("Ha ocurrido un error", "Porfavor intente más tarde", "error");
