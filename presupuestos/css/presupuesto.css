@@ -104,8 +104,16 @@ and open the template in the editor.
 .detail{
     cursor: pointer;
 }
+.detailjava{
+    cursor: pointer;
+}
 .detail:hover{
     background-color: #e0e0e0;
+}
+.recent{
+  border:0 !important;
+  border-top: 1px solid #ddd !important;
+  padding: 1.5rem !important;
 }
 .nuevobt{
   margin-top: 10px;
@@ -341,4 +349,68 @@ and open the template in the editor.
 }
 .theme-white .theme{
   background-color: #ffffff !important;
+}
+/**>>>>>>>>>>>>>>>>>>>>>>>>>>>Para los tabs<<<<<<<<<<<<<<<<<<<<<<<<<<**/
+.theme-red .tab-col-theme > li > a:before {
+  border-bottom: 2px solid #F44336; 
+}
+.theme-pink .tab-col-theme > li > a:before {
+  border-bottom: 2px solid #E91E63 !important;
+}
+.theme-purple .tab-col-theme > li > a:before {
+  border-bottom: 2px solid #9C27B0 !important; 
+}
+.theme-deep-purple .tab-col-theme > li > a:before {
+  border-bottom: 2px solid #673AB7 !important;
+}
+.theme-indigo .tab-col-theme > li > a:before {
+  border-bottom: 2px solid #3F51B5 !important;
+}
+.theme-blue .tab-col-theme > li > a:before {
+  border-bottom: 2px solid #2196F3 !important; 
+}
+.theme-light-blue .tab-col-theme > li > a:before {
+  border-bottom: 2px solid #03A9F4 !important;
+}
+.theme-cyan .tab-col-theme > li > a:before {
+  border-bottom: 2px solid #00BCD4 !important; 
+}
+.theme-teal .tab-col-theme > li > a:before {
+  border-bottom: 2px solid #009688 !important;
+}
+.theme-green .tab-col-theme > li > a:before {
+  border-bottom: 2px solid #4CAF50 !important;
+}
+.theme-light-green .tab-col-theme > li > a:before {
+  border-bottom: 2px solid #8BC34A !important;
+}
+.theme-lime .tab-col-theme > li > a:before {
+  border-bottom: 2px solid #CDDC39 !important;
+}
+.theme-yellow .tab-col-theme > li > a:before {
+  border-bottom: 2px solid #ffe821 !important;
+}
+.theme-amber .tab-col-theme > li > a:before {
+  border-bottom: 2px solid #FFC107 !important;
+}
+.theme-orange .tab-col-theme > li > a:before {
+  border-bottom: 2px solid #FF9800 !important;
+}
+.theme-deep-orange .tab-col-theme > li > a:before {
+  border-bottom: 2px solid #FF5722 !important;
+}
+.theme-brown .tab-col-theme > li > a:before {
+  border-bottom: 2px solid #795548 !important;
+}
+.theme-grey .tab-col-theme > li > a:before {
+  border-bottom: 2px solid #9E9E9E !important;
+}
+.theme-blue-grey .tab-col-theme > li > a:before {
+  border-bottom: 2px solid #607D8B !important;
+}
+.theme-black .tab-col-theme > li > a:before {
+  border-bottom: 2px solid #000000 !important;
+}
+.theme-white .tab-col-theme > li > a:before {
+  border-bottom: 2px solid #ffffff !important;
 }
