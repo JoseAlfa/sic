@@ -23,6 +23,22 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-xs-12 col-md-6">
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <input type="number" id="precio" name="precio" class="form-control" required <?php if(isset($pre))echo 'value="'.$pre.'"'; ?> />
+                                <label class="form-label">Precio</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6">
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <input type="text" id="medida" name="medida" class="form-control" required <?php if(isset($med))echo 'value="'.$med.'"'; ?> />
+                                <label class="form-label">Medida</label>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-xs-12">
                         <div class="form-group form-float">
                             <div class="form-line">
@@ -88,6 +104,12 @@
             </form>
         </div>
         <?php } ?>
+        <div class="row">
+            <div class="col-xs-12 text-center">
+                <br>
+                <button class="btn btn-lg btn-danger" onclick="$.sic.eliminarPro();">ELIMINAR ESTE PRODUCTO</button>
+            </div>
+        </div>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn bg-red waves-effect" data-dismiss="modal">CERRAR</button>
@@ -211,6 +233,44 @@
                 }
             };
             $.sic.server(datos);
+        }
+        $.sic.eliminarPro=function () {
+            swal({
+                title: "¿Estas seguro?",
+                text: "El producto será eliminado de forma permanente",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Aceptar",
+                cancelButtonText: "Cancelar",
+                closeOnConfirm: false
+            }, function (isConfirm) {
+                if (isConfirm) {
+                    datos={
+                        url:'./Inicio/deletePro',
+                        type:'post',
+                        data:{referencia:$('#referencia').val()},
+                        success:function (req) {
+                            $('.nuevo_load').fadeOut();
+                            try{
+                                js=$.parseJSON(req);
+                                swal(js.t, js.m, js.sw);
+                                if (js.o==1) {
+                                    $.sic.load('productos',$.sic.tituloSave);
+                                    $("#nuevo_modal").modal('hide');
+                                }
+                            }catch(e){
+                                swal('Error', $.sic.mjserr, 'error');
+                            }
+                        },
+                        error:function (as,dff,gg) {
+                            $('.nuevo_load').fadeOut();
+                            swal('Error', $.sic.mserr, 'error');
+                        }
+                    };
+                    $.sic.server(datos);
+                }
+            });
         }
     <?php } ?>  
     });
