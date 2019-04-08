@@ -40,6 +40,22 @@
                     </div>
                 </div>
                 <div class="col-xs-12 col-md-6">
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <input type="text" id="cp" name="cp" class="form-control" required <?php if(isset($cp))echo 'value="'.$cp.'"'; ?> />
+                            <label class="form-label">Código postal</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-6">
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <input type="text" id="atn" name="atn" class="form-control" <?php if(isset($atn))echo 'value="'.$atn.'"'; ?> />
+                            <label class="form-label">AT'N</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-6">
                     <b>Tipo</b>
                     <select class="form-control show-tick" id="tipo" name="tipo">
                         <option value="undefined"> Seleccione una opción</option>
