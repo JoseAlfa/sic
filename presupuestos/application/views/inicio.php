@@ -15,6 +15,7 @@ and open the template in the editor.
         <!-- Google Fonts >
         <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css"-->
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
+        <link href="./plugins/material-design-iconic-font/css/material-design-iconic-font.min.css" rel="stylesheet">
 
         <!-- Bootstrap Core Css -->
         <link href="./plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -103,22 +104,25 @@ and open the template in the editor.
                     <ul class="list">
                         <li class="header">MENÚ PRINCIPAL</li>                       
                         <li>
-                            <a href="javascript:void(0);" class="menu-toggle">
+                            <a href="javascript:void(0);" class="menu-toggle toggled">
                                 <i class="fas fa-newspaper fa-lg"></i>
                                 <span>Presupuestos</span>
                             </a>
                             <ul class="ml-menu">
+                                <li data-get="newPresupuesto">
+                                    <a href="#">Nuevo presupuesto</a>
+                                </li>
                                 <li data-get="getPresupuestos">
                                     <a href="#">Recientes</a>
+                                </li>
+                                <li data-get="getBorradores">
+                                    <a href="#">Borradores</a>
                                 </li>
                                 <li data-get="getPlantillas">
                                     <a href="#">Plantillas</a>
                                 </li>
                                 <li data-get="getPresupuestoClose">
                                     <a href="#">Presupuestos cerrados</a>
-                                </li>
-                                <li data-get="getBorradores">
-                                    <a href="#">Borradores</a>
                                 </li>
                             </ul>
                         </li>
@@ -164,14 +168,8 @@ and open the template in the editor.
                                 <span>Más</span>
                             </a>
                             <ul class="ml-menu">
-                                <li data-get="headPDF">
-                                    <a href="#">Encabezado</a>
-                                </li>
-                                <li>
-                                    <a href="#">Pie de página</a>
-                                </li>
-                                <li>
-                                    <a href="#">Politicas</a>
+                                <li data-get="dataPDF">
+                                    <a href="#">Datos en PDF</a>
                                 </li>
                                 <li>
                                     <a href="#">Acerca de...</a>
