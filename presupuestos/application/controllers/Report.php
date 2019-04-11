@@ -100,7 +100,7 @@ class Report extends CI_Controller {
                 $datos_pre_con=$this->modelo->get_perDet($id_pre,$admin);
                 $pro_pre=$this->modelo->productos($id_pre);
                 if ($datos_pre_con==null) {
-                    echo "Error, los datos no son correctos";
+                    echo "Error, imposible generar PDF, esto debido a que no se ha seleccionado ningún cliente.";
                     exit();
                 }
                 foreach ($datos_pre_con as $val) {
@@ -108,8 +108,10 @@ class Report extends CI_Controller {
                     $det="";
                     $firmaPre=$val->cliente;
                     if($val->emp==1){$det="Empresa ";$firmaPre=$val->atn;}
-                    $datos_pre=array('clave'=>$val->cv,'fecha'=>$this->hacerFecha($val->fin),'cliente'=>$det.$val->cliente,'otros'=>$val->otros,'pago'=>$val->pago,'iva'=>$val->iva,'vencimiento'=>$val->ven,'numeroCliente'=>$val->telC,'correoCliente'=>$val->corC,'direccionCliente'=>$val->dirC.' C.P. '.$val->cp,'atn'=>$val->atn);
+                    $datos_pre=array('clave'=>$val->cv,'fecha'=>$this->hacerFecha($val->fin),'cliente'=>$det.$val->cliente,'otros'=>$val->otros,'pago'=>$val->pago,'iva'=>$val->iva,'vencimiento'=>$val->ven,'numeroCliente'=>$val->telC,'correoCliente'=>$val->corC,'direccionCliente'=>$val->dirC.' C.P. '.$val->cp,'atn'=>$val->atn,'liberado'=>$val->lib);
                 }
+            }else{
+                echo "No fue posible generar el archivo PDF.";exit();
             }
         }else{
             echo "Error, no fue posible generar. Esto puede ser debido a que su sesión expiró o no tiene permiso para esta opción. Si usted cree que es un error porfavor contacte al administrador del sistema.";
@@ -151,6 +153,24 @@ class Report extends CI_Controller {
 
         // add a page
         $pdf->AddPage();
+        if(!$datos_pre['liberado']){
+            // draw jpeg image
+            //$pdf->Image('./img/logos/noOfi.png', 90, 100, 60, 60, '', 'http://www.tcpdf.org', '', true, 72);
+
+            // get the current page break margin
+            $bMargin = $pdf->getBreakMargin();
+            // get current auto-page-break mode
+            $auto_page_break = $pdf->getAutoPageBreak();
+            // disable auto-page-break
+            $pdf->SetAutoPageBreak(false, 0);
+            // set bacground image
+            $img_file = './img/logos/noOfi.png';
+            $pdf->Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
+            // restore auto-page-break status
+            $pdf->SetAutoPageBreak($auto_page_break, $bMargin);
+            // set the starting point for the page content
+            $pdf->setPageMark();
+        }
 
         $pdf->SetFont('helvetica', '', 10);
 

@@ -55,6 +55,9 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-xs-12">
+                    <?php if (!isset($nuevo)) { ?><a class="btn waves-effect bg-red btn-block" onclick="$.sic.deleteCliente();">ELIMINAR ESTE CLIENTE</a> <?php } ?>
+                </div>
                 <div class="col-xs-12 col-md-6">
                     <b>Tipo</b>
                     <select class="form-control show-tick" id="tipo" name="tipo">
@@ -146,6 +149,41 @@
                 }
             };
             $.sic.server(datos);
+    }
+    $.sic.deleteCliente=function () {
+        ref=$("#referencia").val();
+        swal({
+            title: "Alerta",
+            text: "El cliente será eliminado de la base de datos",
+            type: "warning",
+            showCancelButton: true,
+            closeOnConfirm: false,
+            showLoaderOnConfirm: true,
+            confirmButtonText:'Eliminar',
+            cancelButtonText:'Cancelar'
+        }, function () {
+            datos={
+                url:'./Inicio/remCliente',
+                type:'post',
+                data:{ref:ref},
+                success:function (data) {
+                    try{
+                        js=$.parseJSON(data);
+                        swal(js.t, js.m, js.sw);
+                        if (js.o==1) {
+                            $.sic.load('clientes',$.sic.tituloSave);
+                            $("#nuevo_modal").modal('hide');
+                        }
+                    }catch(e){
+                        swal('Error', $.sic.mjserr, 'error');
+                    }
+                },
+                error:function (qw,er,th) {
+                    swal('Error', $.sic.mserr, 'error');
+                }
+            };
+            $.sic.server(datos);            
+        });
     }
 </script>
 <?php } ?>

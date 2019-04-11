@@ -563,6 +563,9 @@ class Load_view extends CI_Controller {
                     if ($consulta!=null) {
                         $data=array();
                         foreach ($consulta as $val) {
+                            $ref='code,'.$idu.','.$val->id;
+                            $ref=base64_encode($ref);
+                            $data['ref']=$ref;
                             $data['detalle']=$val->det;
                             $data['pago']=$val->pago;
                             $data['iva']=$val->iva;
@@ -600,7 +603,13 @@ class Load_view extends CI_Controller {
                 }
                 if ($consulta!=null) {
                     foreach ($consulta as $val) {
-                        $print.='<button type="button" class="list-group-item recent" onclick="$.sic.load(\'presupuesto\',\''.$val->cv.'\',{ref:'.$val->id.'})">'.$val->cv.' - '.$val->det.'<span class="badge bg-blue">Por '.$val->nom.' '.$val->ap.'</span></button>';
+                        if($val->lib){
+                            $ref='code,'.$idu.','.$val->id;
+                            $ref=base64_encode($ref);
+                            $print.='<a class="list-group-item recent" href="./Report/generar?ref='.$ref.'" target="blank">'.$val->cv.' - '.$val->det.'<span class="badge bg-red">Cerrado</span><span class="badge bg-blue">Por '.$val->nom.' '.$val->ap.'</span></a>';
+                        }else{
+                           $print.='<a class="list-group-item recent" onclick="$.sic.load(\'presupuesto\',\''.$val->cv.'\',{ref:'.$val->id.'})">'.$val->cv.' - '.$val->det.'<span class="badge bg-green">Editable</span><span class="badge bg-blue">Por '.$val->nom.' '.$val->ap.'</span></a>'; 
+                        }
                     }
                 }else{
                     $print.='<button type="button" class="list-group-item">No hay resultados</button>';
@@ -765,6 +774,20 @@ class Load_view extends CI_Controller {
         }
     }
     ///////////////////detalles de empresa ////////////////////////////////////
+    private function empresa() {
+        $datos=false;
+        $this->load->model('Report_Model','modelo1');
+        $consulta=$this->modelo1->epresa();
+        $uno=true;
+        foreach ($consulta as $val) {
+            if ($uno) {
+                $datos=array('nombre'=>$val->nombre,'direccion'=>$val->direccion,'telefono'=>$val->telefono,'movil'=>$val->movil,'correo'=>$val->correo,'firma'=>$val->firma);
+            }else{
+                $uno=false;break;
+            }
+        }
+        return $datos;
+    }
     public function dataPDF(){
         if ($this->input->is_ajax_request()) {
             $print="";
@@ -772,7 +795,8 @@ class Load_view extends CI_Controller {
             $idp=$this->session->userdata('idperson');
             if ($idu) {
                 if ($this->isAdmin($idu,true)) {
-                    $this->load->view('ajax/empresa');
+                    $data=$this->empresa();
+                    $this->load->view('ajax/empresa',$data);
                 }else{
                     $print=getError('acceso');
                 }
@@ -783,6 +807,9 @@ class Load_view extends CI_Controller {
         }else{
             $this->load->view(getError('ajax'));//Vista que muestra errors
         }
+    }
+    public function faq(){
+        $this->load->view('ajax/faq');
     }
     /*************************************************************************/
     /*************     Fin de Funciones de panel     *****+*******************/

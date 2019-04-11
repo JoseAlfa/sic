@@ -7,7 +7,18 @@ and open the template in the editor.
     Created on : 18/01/2019, 07:23:43 PM
     Author     : José Alfredo Jimenez Sanchez
 */
-
+.mybtnmore a{
+    color: #999;
+    font-size: 1.5rem;
+}
+.mybtnmore a:hover{
+  color: #000;
+  text-decoration: none;
+}
+.mybtnmore a span{
+    position: absolute;
+    left: -28px;
+}
 .logiwn{
     background-color: #fff;
     margin-top: 15%;
@@ -114,6 +125,7 @@ and open the template in the editor.
   border:0 !important;
   border-top: 1px solid #ddd !important;
   padding: 1.5rem !important;
+  cursor: pointer;
 }
 .nuevobt{
   margin-top: 10px;

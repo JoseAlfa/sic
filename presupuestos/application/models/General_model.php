@@ -292,6 +292,17 @@ class General_model extends CI_Model {
         $this->db->where('id_cliente',$id);
         return $this->db->update('clientes',$datos);
     }
+    public function remCliente($ref){
+        $this->db->where('id_cliente',$ref);
+        return $this->db->delete('clientes');
+    }
+    public function clienCount($ref){
+        $this->db->select('count(p.id_presupuesto) num');
+        $this->db->from('presupuestos p');
+        $this->db->where('p.id_cliente',$ref);
+        $res=$this->db->get();
+        return $res->result();
+    }
     /////////////////////////////////////////////7777777///////////7777
     //////////presupuesto77777777777////777///////////7
     public function recientesPre($user=false,$limit=10,$ref=false){
@@ -360,5 +371,8 @@ class General_model extends CI_Model {
     public function updatePresupuesto($ref,$data){
         $this->db->where('id_presupuesto',$ref);
         return $this->db->update('presupuestos',$data);
+    }
+    public function saveBuildData($data){
+        return $this->db->update('empresa',$data);
     }
 }

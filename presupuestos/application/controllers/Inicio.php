@@ -210,6 +210,9 @@ class Inicio extends CI_Controller {
             case 'producto':
                 $consulta=$this->modelo->proCount($ref);
                 break;
+            case 'cliente':
+                $consulta=$this->modelo->clienCount($ref);
+                break;
             default:
                 # code...
                 break;
@@ -330,6 +333,44 @@ class Inicio extends CI_Controller {
                 $m=getError('sesion');
             }
             echo json_encode(array('o'=>$o,'m'=>$m,'sw'=>$sw,'t'=>$swh));///json de rspuesta a procesar en javaScript
+        }else{
+            $m=$this->load->view(getError('ajax'));
+        }
+    }
+    public function remUserAcount() {
+        if ($this->input->is_ajax_request()) {
+            $msg="";//Mensakje final
+            $o=2;//Opcion final
+            $swh="Error";//header de swal
+            $sw="error";//tipo de swal
+            $iduser=$this->session->userdata('iduser');
+            if ($iduser) {
+                if ($this->isAdmin($iduser)) {
+                    $ref=$this->input->post('ref',true);
+                    if ($ref) {
+                        $dependencias=$this->isDepend('user',$ref);
+                        if (!$dependencias) {
+                            if ($this->modelo->remCliente($ref)) {
+                                $m="El usuario se eliminó correctamente";
+                                $o=1;
+                                $sw='success';
+                                $swh='Completo';
+                            }else{
+                                $m='El usuario no fue eliminada';
+                            }
+                        }else{
+                            $m='El usuario no pudo ser eliminado debido a que hay '.$dependencias.' presupuestos que dependen de este';
+                        }
+                    }else{
+                        $m='Imposible realizar operación';
+                    }
+                }else{//si no tiene permisos
+                    $m=getError('acceso');
+                }
+            }else{//si no hay sessio
+                $m=getError('sesion');
+            }
+            echo(json_encode(array('o'=>$o,'t'=>$swh,'m'=>$m,'sw'=>$sw)));
         }else{
             $m=$this->load->view(getError('ajax'));
         }
@@ -914,6 +955,44 @@ class Inicio extends CI_Controller {
             $this->load->view(getError('ajax'));
         }
     }
+    public function remCliente() {////Eliminar cliente
+        if ($this->input->is_ajax_request()) {
+            $msg="";//Mensakje final
+            $o=2;//Opcion final
+            $swh="Error";//header de swal
+            $sw="error";//tipo de swal
+            $iduser=$this->session->userdata('iduser');
+            if ($iduser) {
+                if ($this->isAdmin($iduser)) {
+                    $ref=$this->input->post('ref',true);
+                    if ($ref) {
+                        $dependencias=$this->isDepend('cliente',$ref);
+                        if (!$dependencias) {
+                            if ($this->modelo->remCliente($ref)) {
+                                $m="La marca se eliminó correctamente";
+                                $o=1;
+                                $sw='success';
+                                $swh='Completo';
+                            }else{
+                                $m='La marca no fue eliminada';
+                            }
+                        }else{
+                            $m='El cliente no pudo ser eliminado debido a que hay '.$dependencias.' presupuestos que dependen de este';
+                        }
+                    }else{
+                        $m='Imposible realizar operación';
+                    }
+                }else{//si no tiene permisos
+                    $m=getError('acceso');
+                }
+            }else{//si no hay sessio
+                $m=getError('sesion');
+            }
+            echo(json_encode(array('o'=>$o,'t'=>$swh,'m'=>$m,'sw'=>$sw)));
+        }else{
+            $m=$this->load->view(getError('ajax'));
+        }
+    }
     /////////////////////////////////////////////////////////////////////////777
     ////////////Fnciones para presupestos///////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
@@ -1049,6 +1128,54 @@ class Inicio extends CI_Controller {
                 $m=getError('sesion');
             }
             echo json_encode(array('error'=>$o,'t'=>$swh,'m'=>$m,'sw'=>$sw,'ref'=>$ref));
+        }else{
+            $this->load->view(getError('ajax'));
+        }
+    }
+    ///////////////////////////////Datos de empresa/////////////////
+    public function saveBuildData()  {
+        if ($this->input->is_ajax_request()) {
+            $idu=$this->session->userdata('iduser');
+            $m="";$o=true;$con=false;$sw="red";$swh="Error";$ref=0;
+            if ($idu) {
+                if ($this->isAdmin($idu,true)) {
+                    $nombre=$this->input->post('nombre',true);
+                    $direccion=$this->input->post('direccion',true);
+                    $telefono=$this->input->post('telefono',true);
+                    $movil=$this->input->post('movil',true);
+                    $correo=$this->input->post('correo',true);
+                    $firma=$this->input->post('firma',true);
+                    if($this->validar($nombre)){
+                        if($this->validar($direccion)){
+                            if ($this->validar($telefono)) {
+                                if ($this->validar($movil)) {
+                                    if ($this->validar($correo)) {
+                                        if ($this->validar($firma)) {
+                                            $con=true;///datos completos
+                                        }                                        
+                                    }
+                                }
+                            }
+                        }
+                    }                 
+                    if ($con) {
+                        $data=array('nombre'=>$nombre,'direccion'=>$direccion,'telefono'=>$telefono,'movil'=>$movil,'correo'=>$correo,'firma'=>$firma);
+                        $ref=$this->modelo->saveBuildData($data);
+                        if ($ref) {
+                            $m="Datos actualizados correctamente.";$o=false;$sw='success';$swh="Completo";
+                        }else{
+                            $m=getError('insert');
+                        }
+                    }else{
+                        $m=getError('parametros');
+                    }
+                }else{//si no tiene permisos
+                    $m=getError('acceso');
+                }
+            }else{//si no hay sessio
+                $m=getError('sesion');
+            }
+            echo json_encode(array('error'=>$o,'t'=>$swh,'m'=>$m,'sw'=>$sw));
         }else{
             $this->load->view(getError('ajax'));
         }

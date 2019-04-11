@@ -23,6 +23,7 @@ class Report_Model extends CI_Model {
         	$this->db->where('u.id_usuario',$idu);
         }
         $res=$this->db->get();
+        #echo $this->db->last_query();exit();
         $return= $res->result();
         return $return;
 	}

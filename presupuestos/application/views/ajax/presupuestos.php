@@ -1,3 +1,20 @@
+<div class="header" style="border-bottom: 0px;">
+                            
+                            <ul class="header-dropdown m-r--5">
+                                <li class="dropdown mybtnmore">
+                                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                        <span>Más</span>
+                                        <i class="material-icons">more_vert</i>
+                                    </a>
+                                    <ul class="dropdown-menu pull-right" style="min-width: 190px;">
+                                        <li><a href="./Report/generar?ref=<?php if(isset($ref)){echo $ref;} ?>" target="_blank" onclick="void(0);"><i class="material-icons">remove_red_eye</i>Vista previa en pdf</a></li>
+                                        <li id="cerrarPreSure"><a href="javascript:void(0);"><i class="material-icons">beenhere</i> Cerrar presupuesto</a></li>
+                                        <li><a href="javascript:void(0);"><i class="material-icons">remove</i> Eliminar presupuesto</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+</div>
+
 <!-- Tabs With Icon Title -->
 <div class="body">
     <!-- Nav tabs -->
@@ -168,6 +185,40 @@
         $.sic.iva=<?php if(isset($iva)){echo $iva;}else{echo 16;} ?>;
         $.sic.totalfin=<?php if(isset($totalfin)){echo $totalfin;} else {echo 0;} ?>;
         $.sic.idpreinwindow=<?php if(isset($idpre)){echo $idpre;} else {echo 0;} ?>;
+        $("#cerrarPreSure").click(function(event) {
+            swal({
+                title: "Alerta",
+                text: "El cliente será eliminado de la base de datos",
+                type: "warning",
+                showCancelButton: true,
+                closeOnConfirm: false,
+                showLoaderOnConfirm: true,
+                confirmButtonText:'Eliminar',
+                cancelButtonText:'Cancelar'
+            }, function () {
+                datos={
+                    url:'./Inicio/remCliente',
+                    type:'post',
+                    data:{ref:ref},
+                    success:function (data) {
+                        try{
+                            js=$.parseJSON(data);
+                            swal(js.t, js.m, js.sw);
+                            if (js.o==1) {
+                                $.sic.load('clientes',$.sic.tituloSave);
+                                $("#nuevo_modal").modal('hide');
+                            }
+                        }catch(e){
+                            swal('Error', $.sic.mjserr, 'error');
+                        }
+                    },
+                    error:function (qw,er,th) {
+                        swal('Error', $.sic.mserr, 'error');
+                    }
+                };
+                $.sic.server(datos);            
+            });
+        });
         $("#ivash").click(function(event) {
             swal({
                 title: "Editar IVA",

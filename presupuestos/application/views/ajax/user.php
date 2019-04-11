@@ -63,7 +63,7 @@
                         <option value="1" <?php if(isset($adm)){if($adm==1)echo 'selected';} ?> >Administrador</option>
                     </select>
                 </div>
-                
+                <?php if (!isset($nuevo)) { ?><a class="btn waves-effect bg-red btn-block" onclick="$.sic.deleteUserAcount();">ELIMINAR ESTE CLIENTE</a> <?php } ?>
             </div>
         </div>
     </div>
@@ -142,6 +142,41 @@
             }
         };
         $.sic.server(datos);
+    }
+    $.sic.deleteUserAcount=function () {
+        ref=$("#referencia").val();
+        swal({
+            title: "Alerta",
+            text: "El usuario será eliminado de la base de datos",
+            type: "warning",
+            showCancelButton: true,
+            closeOnConfirm: false,
+            showLoaderOnConfirm: true,
+            confirmButtonText:'Eliminar',
+            cancelButtonText:'Cancelar'
+        }, function () {
+            datos={
+                url:'./Inicio/remUserAcount',
+                type:'post',
+                data:{ref:ref},
+                success:function (data) {
+                    try{
+                        js=$.parseJSON(data);
+                        swal(js.t, js.m, js.sw);
+                        if (js.o==1) {
+                            $.sic.load('clientes',$.sic.tituloSave);
+                            $("#nuevo_modal").modal('hide');
+                        }
+                    }catch(e){
+                        swal('Error', $.sic.mjserr, 'error');
+                    }
+                },
+                error:function (qw,er,th) {
+                    swal('Error', $.sic.mserr, 'error');
+                }
+            };
+            $.sic.server(datos);            
+        });
     }
 </script>
 <?php } ?>

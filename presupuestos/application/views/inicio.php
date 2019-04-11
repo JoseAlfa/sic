@@ -14,8 +14,7 @@ and open the template in the editor.
 
         <!-- Google Fonts >
         <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css"-->
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
-        <link href="./plugins/material-design-iconic-font/css/material-design-iconic-font.min.css" rel="stylesheet">
+        <link href="./icons/iconfont/material-icons.css" rel="stylesheet" type="text/css">
 
         <!-- Bootstrap Core Css -->
         <link href="./plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -85,7 +84,7 @@ and open the template in the editor.
                         <li><a href="javascript:void(0);" class="js-search" data-close="true"><i class="material-icons">search</i></a></li>
                         <!- #END# Call Search -->
                         
-                        <li class="pull-right"><a href="#" class="js-right-sidebar" data-close="true"><i class="fas fa-cogs"></i></a></li>
+                        <li class="pull-right"><a href="#" class="js-right-sidebar" data-close="true"><i class="material-icons">more_vert</i></a></li>
                     </ul>
                 </div>
             </div>
@@ -171,7 +170,7 @@ and open the template in the editor.
                                 <li data-get="dataPDF">
                                     <a href="#">Datos en PDF</a>
                                 </li>
-                                <li>
+                                <li data-get="faq">
                                     <a href="#">Acerca de...</a>
                                 </li>
                             </ul>
