@@ -63,7 +63,7 @@
                         <option value="1" <?php if(isset($adm)){if($adm==1)echo 'selected';} ?> >Administrador</option>
                     </select>
                 </div>
-                <?php if (!isset($nuevo)) { ?><a class="btn waves-effect bg-red btn-block" onclick="$.sic.deleteUserAcount();">ELIMINAR ESTE CLIENTE</a> <?php } ?>
+                <?php if (!isset($nuevo)) { ?><a class="btn waves-effect bg-red btn-block" onclick="$.sic.deleteUserAcount();">ELIMINAR ESTE USUARIO</a> <?php } ?>
             </div>
         </div>
     </div>
@@ -164,7 +164,7 @@
                         js=$.parseJSON(data);
                         swal(js.t, js.m, js.sw);
                         if (js.o==1) {
-                            $.sic.load('clientes',$.sic.tituloSave);
+                            $.sic.load('usuarios',$.sic.tituloSave);
                             $("#nuevo_modal").modal('hide');
                         }
                     }catch(e){

@@ -57,6 +57,31 @@ class General_model extends CI_Model {
         #echo $this->db->last_query();
         return $res->result();
     }
+    public function userCount($ref) {
+        $this->db->select('count(p.id_presupuesto) num');
+        $this->db->from('presupuestos p');
+        $this->db->where('p.id_usuario',$ref);
+        $res=$this->db->get();
+        return $res->result();
+    }
+    //eliminar usuario
+    public function remUserAcount($ref,$idp){
+        $ret=false;
+        $this->db->trans_begin();
+        $this->db->where('id_usuario',$ref);
+        if ($this->db->delete('usuarios')) {
+            $this->db->where('id_persona',$idp);
+            if ($this->db->delete('personas')) {
+                $ret=true;
+                $this->db->trans_commit();
+            }else{
+                $this->db->trans_rollback();
+            }
+        }else{
+            $this->db->trans_rollback();
+        }
+        return $ret;
+    }
      /*************Produtos______________>**/
     public function getProductos($id=false,$limit=1000,$offset=0,$pag=true,$q='')  {
         $return=null;
@@ -101,6 +126,13 @@ class General_model extends CI_Model {
         $this->db->select('count(pp.id_pre_pro) num');
         $this->db->from('presupuesto_productos pp');
         $this->db->where('pp.id_producto',$ref);
+        $res=$this->db->get();
+        return $res->result();
+    }
+    public function preCount($ref){
+        $this->db->select('count(pp.id_pre_pro) num');
+        $this->db->from('presupuesto_productos pp');
+        $this->db->where('pp.id_presupuesto',$ref);
         $res=$this->db->get();
         return $res->result();
     }
@@ -306,7 +338,7 @@ class General_model extends CI_Model {
     /////////////////////////////////////////////7777777///////////7777
     //////////presupuesto77777777777////777///////////7
     public function recientesPre($user=false,$limit=10,$ref=false){
-        $this->db->select("pr.id_presupuesto id,pr.id_cliente idc,pr.id_usuario idu,pr.clave cv,pr.detalles det, pr.plantilla pla,pr.liberado lib,pr.fecha_ini ini,pr.fecha_fin fin,p.nombre nom,p.apellidos ap, p.correo cor,p.telefono tel,pr.liberado lib,pr.forma_pago pago,pr.vencimiento ven,pr.iva iva");
+        $this->db->select("pr.id_presupuesto id,pr.id_cliente idc,pr.id_usuario idu,pr.clave cv,pr.detalles det, pr.plantilla pla,pr.liberado lib,pr.fecha_ini ini,pr.fecha_fin fin,p.nombre nom,p.apellidos ap,pr.otros_datos mas, p.correo cor,p.telefono tel,pr.liberado lib,pr.forma_pago pago,pr.vencimiento ven,pr.iva iva");
         $this->db->from('personas p');
         $this->db->join('usuarios u','p.id_persona=u.id_persona');
         $this->db->join('presupuestos pr','u.id_usuario=pr.id_usuario');
@@ -353,6 +385,41 @@ class General_model extends CI_Model {
         }
         return $return;
     }
+    ///Función para retornar los datos de presupueto
+    public function presupuestosList($idsel=false,$type=0,$limit=1000000,$offset=0,$pag=true,$q='',$iduser=false) {
+         $return=null;
+        $this->db->select("pr.id_presupuesto id,pr.id_cliente idc,pr.id_usuario idu,pr.clave cv,pr.detalles det, pr.plantilla pla,pr.liberado lib,pr.fecha_ini ini,pr.fecha_fin fin,p.nombre nom,p.apellidos ap, p.correo cor,p.telefono tel,pr.liberado lib,pr.forma_pago pago,pr.vencimiento ven,pr.iva iva");
+        $this->db->from('personas p');
+        $this->db->join('usuarios u','p.id_persona=u.id_persona');
+        $this->db->join('presupuestos pr','u.id_usuario=pr.id_usuario');
+        $this->db->group_start();
+        $this->db->or_like('pr.clave', $q);
+        $this->db->or_like('pr.detalles', $q); 
+        $this->db->group_end();
+        if ($idsel) {
+            $this->db->where('pr.id_presupuesto',$idsel);
+            $res=$this->db->get();
+            $return= $res->result();
+        }else{
+            if ($pag) {
+                $this->db->where('pr.plantilla',$type);
+                $this->db->where('pr.liberado!=','1');
+                if($iduser){
+                    $this->db->where('pr.id_usuario',$iduser);
+                }
+                $this->db->order_by('pr.id_presupuesto desc');
+                $this->db->limit($limit, $offset);
+                $res=$this->db->get();
+                //echo $this->db->last_query();
+                $return= $res->result();
+            }else{
+                $res=$this->db->get();
+                //echo $this->db->last_query();
+                $return= $res->num_rows();
+            }
+        }
+        return $return;
+    }
     ///////////////para presupuestos
     public function nuevoPresupuesto($data) {
         if ($this->db->insert('presupuestos',$data)) {
@@ -368,9 +435,28 @@ class General_model extends CI_Model {
             return false;
         }
     }
-    public function updatePresupuesto($ref,$data){
+    public function updatePresupuesto($ref,$data,$idu){
+        $this->db->where('id_usuario',$idu);
         $this->db->where('id_presupuesto',$ref);
         return $this->db->update('presupuestos',$data);
+    }
+    public function deletePresupuesto($ref){
+        $ret=false;
+        $this->db->trans_begin();
+        $this->db->where('id_presupuesto',$ref);
+        if ($this->db->delete('presupuesto_productos')) {
+            $this->db->where('id_presupuesto',$ref);
+            if ($this->db->delete('presupuestos')) {
+                $ret=true;
+                //$this->db->trans_rollback();
+                $this->db->trans_commit();
+            }else{
+                $this->db->trans_rollback();
+            }
+        }else{
+            $this->db->trans_rollback();
+        }
+        return $ret;
     }
     public function saveBuildData($data){
         return $this->db->update('empresa',$data);

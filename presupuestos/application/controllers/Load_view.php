@@ -99,8 +99,8 @@ class Load_view extends CI_Controller {
         $config['additional_param'] = "{'pagina' : 'false',q:'".$q."'}";
         return $config;
     }
-    function busquedaForm($seccion,$busqueda,$nuevo){//genera el formulario de busqueda
-        return '<div class="header">
+    function busquedaForm($seccion,$busqueda,$nuevo,$ocultarNuevo=false){//genera el formulario de busqueda
+        $ret='<div class="header">
                     <div class="row clearfix" >
                     <form onsubmit="$.sic.buscar(this,\''.$seccion.'\');return false;">
                         <div class="col-sm-8 searchIn">
@@ -114,10 +114,14 @@ class Load_view extends CI_Controller {
                             <button type="submit" class="btn bg-blue waves-effect"> BUSCAR</button>
                             <button type="button" class="btn bg-red waves-effect" onclick="$.sic.load(\''.$seccion.'\',$.sic.tituloSave);">REINICIAR</button>
                         </div>
-                    </form>
-                    <div class="col-sm-12"><button onclick="$.sic.nuevo(\''.$nuevo.'\');" class="btn theme nuevobt"><i class="fas fa-plus"></i> AGREGAR</button></div>
-                    </div>
+                    </form>';
+        if(!$ocultarNuevo){
+            $ret.='<div class="col-sm-12"><button onclick="$.sic.nuevo(\''.$nuevo.'\');" class="btn theme nuevobt"><i class="fas fa-plus"></i> AGREGAR</button></div>
+                    ';
+        }
+        $ret.='</div>
                 </div><div class="body table-responsive">';
+        return $ret;     
     }
     function hacerEncabezado($encabezado){//hace encabezado de una tbal a base de u array
         $return='<table class="table"><thead><tr>';//valor a retornar
@@ -464,17 +468,22 @@ class Load_view extends CI_Controller {
     /*************************************************************************/
     /*********Funciones de reportes***********/
 
-    private function clientesSel($id=false) {
+    private function clientesSel($id=false,$nom=false) {
         $query=$this->modelo->getClientes();
         $sel='<option value="undefined">Seleccione una opción</option>';
+        $nombre=false;
         if ($query!=null) {
             foreach ($query as $val) {
                 if ($val->id==$id) {
                     $sel.='<option selected value="'.$val->id.'">'.$val->nom.'</option>';
+                    $nombre=$val->nom;
                 }else{
                     $sel.='<option value="'.$val->id.'">'.$val->nom.'</option>';
                 }
             }
+        }
+        if ($nom) {
+            $sel=$nombre;
         }
         return $sel;
     }
@@ -563,6 +572,10 @@ class Load_view extends CI_Controller {
                     if ($consulta!=null) {
                         $data=array();
                         foreach ($consulta as $val) {
+                            if ($val->idu==$idu) {
+                                //echo $val->idu.' '.$idu;
+                                $data['onlyView']=false;
+                            }
                             $ref='code,'.$idu.','.$val->id;
                             $ref=base64_encode($ref);
                             $data['ref']=$ref;
@@ -570,6 +583,7 @@ class Load_view extends CI_Controller {
                             $data['pago']=$val->pago;
                             $data['iva']=$val->iva;
                             $data['idpre']=$val->id;
+                            $data['otros']=$val->mas;
                             #$data['']=$val->;
                             $data['vencimiento']=$val->ven;
                             $data['clientes']=$this->clientesSel($val->idc);
@@ -603,18 +617,23 @@ class Load_view extends CI_Controller {
                 }
                 if ($consulta!=null) {
                     foreach ($consulta as $val) {
-                        if($val->lib){
+                        if($val->lib || $val->idu!= $idu){
                             $ref='code,'.$idu.','.$val->id;
                             $ref=base64_encode($ref);
                             $print.='<a class="list-group-item recent" href="./Report/generar?ref='.$ref.'" target="blank">'.$val->cv.' - '.$val->det.'<span class="badge bg-red">Cerrado</span><span class="badge bg-blue">Por '.$val->nom.' '.$val->ap.'</span></a>';
                         }else{
-                           $print.='<a class="list-group-item recent" onclick="$.sic.load(\'presupuesto\',\''.$val->cv.'\',{ref:'.$val->id.'})">'.$val->cv.' - '.$val->det.'<span class="badge bg-green">Editable</span><span class="badge bg-blue">Por '.$val->nom.' '.$val->ap.'</span></a>'; 
+                            if ($val->pla) {
+                                $print.='<a class="list-group-item detail" ur="plantilla" ref="'.$val->id.'">'.$val->cv.' - '.$val->det.'<span class="badge bg-green">Editable</span><span class="badge bg-blue"></span><span class="badge bg-purple">Plantilla</span></a>'; 
+                            }else{
+                                $print.='<a class="list-group-item recent" onclick="$.sic.load(\'presupuesto\',\''.$val->cv.' - Presupuesto\',{ref:'.$val->id.'})">'.$val->cv.' - '.$val->det.'<span class="badge bg-green">Editable</span><span class="badge bg-blue">Por '.$val->nom.' '.$val->ap.'</span></a>'; 
+                            }
+                           
                         }
                     }
                 }else{
                     $print.='<button type="button" class="list-group-item">No hay resultados</button>';
                 }
-                $print.='</div></div></div>';
+                $print.='</div></div></div>'.$this->editScript();
             }else{
                 $print=getError('sesion');
             }
@@ -628,37 +647,97 @@ class Load_view extends CI_Controller {
             $idu=$this->session->userdata('iduser');
             $idp=$this->session->userdata('idperson');
             if ($idu) {
-                if ($this->isAdmin($idu,true)) {
+                if ($this->isAdmin($idu)) {
                     $q=$this->input->post('q',true);///busqueda
                     $config=$this->pagConfig($q,5);//se carga configuración predeterminada
-                    $config['base_url'] = './Load_view/usuarios';//url donde estan los datos a paginar
+                    $config['base_url'] = './Load_view/getPlantillas';//url donde estan los datos a paginar
                     $limit=$config['per_page'];///limete de la consulta
-                    $config['total_rows'] = $this->modelo->getUsuarios(false,$limit,$offset,false,$q,$idp);//total de registros
+                    $config['total_rows'] = $this->modelo->presupuestosList(false,1,$limit,$offset,false,$q,$idu);//total de registros
+                    if($this->isAdmin($idu,true)){
+                        $config['total_rows'] = $this->modelo->presupuestosList(false,1,$limit,$offset,false,$q);
+                    }
                     $this->jquery_pagination->initialize($config);//se inicializa la librebreria de paginación
-                    $consulta =$this->modelo->getUsuarios(false,$limit,$offset,true,$q,$idp);//consulta de valores pertinentes a esta página
-                    $print=$this->busquedaForm('usuarios',$q,'user');///formulario de busqueda
-                    $encabezado=array('Nombre','Correo','Telefono','Usuario','Tipo');//Encabezado de la tablaa
+                    $consulta =$this->modelo->presupuestosList(false,1,$limit,$offset,true,$q,$idu);//consulta de valores pertinentes a esta página
+                    if($this->isAdmin($idu,true)){
+                        $consulta =$this->modelo->presupuestosList(false,1,$limit,$offset,true,$q);
+                    }
+                    $print=$this->busquedaForm('getPlantillas',$q,'plantilla',true);///formulario de busqueda
+                    $encabezado=array('Detalles','Creada','Cliente');//Encabezado de la tablaa
+                    if ($this->isAdmin($idu,true)) {
+                        $encabezado=array('Detalles','Creada','Cliente','Creador');
+                    }
                     $print.=$this->hacerEncabezado($encabezado);///Se le anexa el encabeado a la tabla
-                    if ($consulta!=null&&$consulta) {//Si hay resulados en la consulta
+                    if ($consulta!=null) {//Si hay resulados en la consulta
+//pr.id_presupuesto id,pr.id_cliente idc,pr.id_usuario idu,pr.clave cv,pr.detalles det, pr.plantilla pla,pr.liberado lib,pr.fecha_ini ini,pr.fecha_fin fin,p.nombre nom,p.apellidos ap, p.correo cor,p.telefono tel,pr.liberado lib,pr.forma_pago pago,pr.vencimiento ven,pr.iva iva
                         foreach ($consulta as $val) {//Se recorre el resltado de la consulta
-                            $id=$val->idp;///Id de persona
-                            $idu=$val->idu;//id de usuario
+                            $id=$val->id;///Id de presupuesto
+                            $idc=$val->idc;//id cliente
+                            $iduR=$val->idu;///id ussuario que guarda
                             $nombre=$val->nom;//nombre
                             $apellidos=$val->ap;//apellidos
-                            $correo=$val->cor;//correo
-                            $telefono=$val->tel;//correo
-                            $admin=$val->adm;///Tipo de usuario
-                            $usr=$val->usr;//ombre de usuario
-                            $tipo="Administrador";//tipo de usuario en nombre
-                            if (!$admin) {//Si no es administrador
-                                $tipo="Usuario normal";//tipo de usuario en nombre
-                            }
-                            $print.='<tr class="detail" ur="user" ref="'.$id.'"><td>'.$nombre.' '.$apellidos.'</td><td>'.$correo.'</td><td>'.$telefono.'</td><td>'.$usr.'</td><td>'.$tipo.'</td></tr>';
+                            $creada=$val->ini;//fecha de creación
+                            $detalle=$val->det;///detalles de presupuesto
+                            $print.='<tr class="detail" ur="plantilla" ref="'.$id.'"><td>'.$detalle.'</td><td>'.$this->hacerFecha($creada).'</td><td>'.$this->clientesSel($idc,true).'</td>';
+                            if($this->isAdmin($idu,true)){
+                                $print.='<td>'.$nombre.' '.$apellidos.'</td>';
+                            }    
+                            $print.='</tr>';
                         }
                     }else{
                         $print.='<tr><td colspan="'.count($encabezado).'">No hay resultados</td></tr>';//No hay resultado
                     }
                     $print.='</tbody></table></div><div class="paginas">'.$this->jquery_pagination->create_links().'</div>'.$this->editScript();
+                }else{
+                    $print=getError('acceso');
+                }
+            }else{
+                $print=getError('sesion');
+            }
+            echo $print;
+        }else{
+            $this->load->view(getError('ajax'));//Vista que muestra errors
+        }
+    }
+    ///detalles de plantilla
+    public function plantilla(){
+        if ($this->input->is_ajax_request()) {
+            $idu=$this->session->userdata('iduser');
+            $idp=$this->session->userdata('idperson');
+            $print="";
+            if ($idu) {
+                $consulta=null;
+                if ($this->isAdmin($idu)) {
+                    $ref=$this->input->post('ref',true);
+                    $consulta=$this->modelo->recientesPre(false,1,$ref);
+                    if ($consulta!=null) {
+                        $data=array();
+                        foreach ($consulta as $val) {
+                            if ($val->idu==$idu) {
+                                //echo $val->idu.' '.$idu;
+                                $data['onlyView']=false;
+                            }
+                            $ref='code,'.$idu.','.$val->id;
+                            $ref=base64_encode($ref);
+                            $data['ref']=$ref;
+                            $data['detalle']=$val->det;
+                            $data['pago']=$val->pago;
+                            $data['iva']=$val->iva;
+                            $data['idpre']=$val->id;
+                            $data['otros']=$val->mas;
+                            #$data['']=$val->;
+                            $data['vencimiento']=$val->ven;
+                            $data['clientes']=$this->clientesSel($val->idc);
+                            $data['productos']=$this->productosSel();
+                            $data['json']=$this->productsJSON();
+                            $data['plantilla']=true;
+                            echo '<div class="modal-header">
+                                    <div class="row"></div>
+                                    <h3 class="modal-title">Plantilla</h3>
+                                </div>
+                                <div class="modal-body"><div class="card">';
+                            $this->load->view('ajax/presupuestos',$data);
+                        }
+                    }
                 }else{
                     $print=getError('acceso');
                 }
@@ -683,7 +762,7 @@ class Load_view extends CI_Controller {
                     $config['total_rows'] = $this->modelo->presupuestos(false,1,$limit,$offset,false,$q,$idp);//total de registros
                     $this->jquery_pagination->initialize($config);//se inicializa la librebreria de paginación
                     $consulta =$this->modelo->presupuestos(false,1,$limit,$offset,true,$q,$idp);//consulta de valores pertinentes a esta página
-                    $print=$this->busquedaForm('usuarios',$q,'user');///formulario de busqueda
+                    $print=$this->busquedaForm('getPresupuestoClose',$q,'hola',true);///formulario de busqueda
                     $canSeeAut=$this->isAdmin($idu,true);
                     $encabezado=array('Clave','Detalles','Cliente','Cerrado');//Encabezado de la tablaa
                     if($canSeeAut){
@@ -729,39 +808,46 @@ class Load_view extends CI_Controller {
             $idu=$this->session->userdata('iduser');
             $idp=$this->session->userdata('idperson');
             if ($idu) {
-                if ($this->isAdmin($idu,true)) {
+                if ($this->isAdmin($idu)) {
                     $q=$this->input->post('q',true);///busqueda
                     $config=$this->pagConfig($q,5);//se carga configuración predeterminada
-                    $config['base_url'] = './Load_view/usuarios';//url donde estan los datos a paginar
+                    $config['base_url'] = './Load_view/getPlantillas';//url donde estan los datos a paginar
                     $limit=$config['per_page'];///limete de la consulta
-                    $config['total_rows'] = $this->modelo->getUsuarios(false,$limit,$offset,false,$q,$idp);//total de registros
+                    $config['total_rows'] = $this->modelo->presupuestosList(false,0,$limit,$offset,false,$q,$idu);//total de registros
+                    if($this->isAdmin($idu,true)){
+                        $config['total_rows'] = $this->modelo->presupuestosList(false,0,$limit,$offset,false,$q);
+                    }
                     $this->jquery_pagination->initialize($config);//se inicializa la librebreria de paginación
-                    $consulta =$this->modelo->getUsuarios(false,$limit,$offset,true,$q,$idp);//consulta de valores pertinentes a esta página
-                    $print=$this->busquedaForm('usuarios',$q,'user');///formulario de busqueda
-                    $encabezado=array('Nombre','Correo','Telefono','Usuario','Tipo');//Encabezado de la tablaa
+                    $consulta =$this->modelo->presupuestosList(false,0,$limit,$offset,true,$q,$idu);//consulta de valores pertinentes a esta página
+                    if($this->isAdmin($idu,true)){
+                        $consulta =$this->modelo->presupuestosList(false,0,$limit,$offset,true,$q);
+                    }
+                    $print=$this->busquedaForm('getPlantillas',$q,'plantilla',true);///formulario de busqueda
+                    $encabezado=array('Detalles','Creada','Cliente');//Encabezado de la tablaa
+                    if ($this->isAdmin($idu,true)) {
+                        $encabezado=array('Detalles','Creada','Cliente','Creador');
+                    }
                     $print.=$this->hacerEncabezado($encabezado);///Se le anexa el encabeado a la tabla
-                    if ($consulta!=null&&$consulta) {//Si hay resulados en la consulta
+                    if ($consulta!=null) {//Si hay resulados en la consulta
+//pr.id_presupuesto id,pr.id_cliente idc,pr.id_usuario idu,pr.clave cv,pr.detalles det, pr.plantilla pla,pr.liberado lib,pr.fecha_ini ini,pr.fecha_fin fin,p.nombre nom,p.apellidos ap, p.correo cor,p.telefono tel,pr.liberado lib,pr.forma_pago pago,pr.vencimiento ven,pr.iva iva
                         foreach ($consulta as $val) {//Se recorre el resltado de la consulta
-                            $id=$val->idp;///Id de persona
-                            $idu=$val->idu;//id de usuario
+                            $id=$val->id;///Id de presupuesto
+                            $idc=$val->idc;//id cliente
+                            $iduR=$val->idu;///id ussuario que guarda
                             $nombre=$val->nom;//nombre
                             $apellidos=$val->ap;//apellidos
-                            $correo=$val->cor;//correo
-                            $telefono=$val->tel;//correo
-                            $admin=$val->adm;///Tipo de usuario
-                            $usr=$val->usr;//ombre de usuario
-                            $tipo="Administrador";//tipo de usuario en nombre
-                            if (!$admin) {//Si no es administrador
-                                $tipo="Usuario normal";//tipo de usuario en nombre
-                            }
-                            $ref='code,'.$idu.','.$id;
-                            $ref=base64_encode($ref);
-                            $print.='<tr class="detail" ur="user" data-ref="'.$ref.'"><td>'.$nombre.' '.$apellidos.'</td><td>'.$correo.'</td><td>'.$telefono.'</td><td>'.$usr.'</td><td>'.$tipo.'</td></tr>';
+                            $creada=$val->ini;//fecha de creación
+                            $detalle=$val->det;///detalles de presupuesto
+                            $print.='<tr class="detail" onclick="$.sic.load(\'presupuesto\',\''.$val->cv.' - Presupuesto\',{ref:'.$val->id.'})"><td>'.$detalle.'</td><td>'.$this->hacerFecha($creada).'</td><td>'.$this->clientesSel($idc,true).'</td>';
+                            if($this->isAdmin($idu,true)){
+                                $print.='<td>'.$nombre.' '.$apellidos.'</td>';
+                            }    
+                            $print.='</tr>';
                         }
                     }else{
                         $print.='<tr><td colspan="'.count($encabezado).'">No hay resultados</td></tr>';//No hay resultado
                     }
-                    $print.='</tbody></table></div><div class="paginas">'.$this->jquery_pagination->create_links().'</div>'.$this->editScript();
+                    $print.='</tbody></table></div><div class="paginas">'.$this->jquery_pagination->create_links().'</div>';
                 }else{
                     $print=getError('acceso');
                 }

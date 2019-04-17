@@ -21,8 +21,8 @@ inicio de sesión SIC todos los derechos reservados 2019.
         <link href="./css/style.css" rel="stylesheet">
 
         <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
+        <link href="./icons/iconfont/material-icons.css" rel="stylesheet" type="text/css">
         <link href="./css/themes/all-themes.css" rel="stylesheet" />
-        <link rel="stylesheet" href="./icons/css/fontawesome-all.min.css">
         <link href="./css/presupuesto.css" rel="stylesheet" type="text/css"/>
 
     </head>
@@ -54,7 +54,7 @@ inicio de sesión SIC todos los derechos reservados 2019.
                         <div class="msg">Sistema de Gestión de Presupuestos</div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <i class="fas fa-user"></i>
+                                <i class="material-icons" style="font-size: 24px;">account_circle</i>
                             </span>
                             <div class="form-line">
                                 <input type="text" class="form-control" name="u" placeholder="Usuario" required id="usr" autofocus>
@@ -62,7 +62,7 @@ inicio de sesión SIC todos los derechos reservados 2019.
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <i class="fas fa-lock"></i>
+                                <i class="material-icons" style="font-size: 24px;">vpn_key</i>
                             </span>
                             <div class="form-line">
                                 <input type="password" class="form-control" name="p" placeholder="Contraseña" required id="pas">

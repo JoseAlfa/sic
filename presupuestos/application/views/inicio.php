@@ -31,7 +31,7 @@ and open the template in the editor.
 
         <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
         <link href="./css/themes/all-themes.min.css" rel="stylesheet" />
-        <link rel="stylesheet" href="./icons/css/fontawesome-all.min.css">
+        <!--link rel="stylesheet" href="./icons/css/fontawesome-all.min.css"-->
         <link rel="stylesheet" href="./js/toastr/toastr.min.css">
         <link href="./css/presupuesto.css" rel="stylesheet" type="text/css"/>
 
@@ -104,7 +104,7 @@ and open the template in the editor.
                         <li class="header">MENÚ PRINCIPAL</li>                       
                         <li>
                             <a href="javascript:void(0);" class="menu-toggle toggled">
-                                <i class="fas fa-newspaper fa-lg"></i>
+                                <i class="material-icons">library_books</i>
                                 <span>Presupuestos</span>
                             </a>
                             <ul class="ml-menu">
@@ -127,7 +127,7 @@ and open the template in the editor.
                         </li>
                         <li>
                             <a href="javascript:void(0);" class="menu-toggle">
-                                <i class="fas fa-clipboard-list fa-lg"></i>
+                                <i class="material-icons">router</i>
                                 <span>Productos</span>
                             </a>
                             <ul class="ml-menu">
@@ -144,7 +144,7 @@ and open the template in the editor.
                         </li>
                         <li>
                             <a href="javascript:void(0);" class="menu-toggle">
-                                <i class="far fa-money-bill-alt fa-lg"></i>
+                                <i class="material-icons">business</i>
                                 <span>Clientes</span>
                             </a>
                             <ul class="ml-menu">
@@ -154,7 +154,7 @@ and open the template in the editor.
 
                         <li>
                             <a href="javascript:void(0);" class="menu-toggle">
-                                <i class="fas fa-users fa-lg"></i>
+                                <i class="material-icons">supervisor_account</i>
                                 <span>Usuarios</span>
                             </a>
                             <ul class="ml-menu">
@@ -163,7 +163,7 @@ and open the template in the editor.
                         </li>
                         <li>
                             <a href="javascript:void(0);" class="menu-toggle">
-                                <i class="fas fa-lightbulb fa-lg"></i>
+                                <i class="material-icons">more</i>
                                 <span>Más</span>
                             </a>
                             <ul class="ml-menu">
@@ -179,13 +179,13 @@ and open the template in the editor.
                         <li class="header">MAS OPCIONES</li>
                         <li class="ajuestes_bt">
                             <a href="#">
-                                <i class="fas fa-cogs fa-lg col-amber"></i>
+                                <i class="material-icons col-amber">settings</i>
                                 <span>Ajustes</span>
                             </a>
                         </li>
                         <li class="salir_bt">
                             <a href="#">
-                                <i class="fas fa-lg fa-power-off col-red"></i>
+                                <i class="material-icons col-red">power_settings_new</i>
                                 <span>Cerrar sesión</span>
                             </a>
                         </li>
@@ -236,11 +236,11 @@ and open the template in the editor.
                             </ul>
                             <p>AJUSTES DE LA CUENTA</p>
                             <ul class="setting-list">
-                                <li class="c_pass">
-                                    <span><i class="fas fa-lock"></i> Cambiar contraseña</span>
+                                <li class="c_pass waves-effect">
+                                    <a href="javascript:void(0);" class="lista"><i class="material-icons">enhanced_encryption</i><span> Cambiar contraseña</span></a>
                                 </li>
-                                <li class="salir_bt">
-                                    <span><i class="fas fa-power-off"></i> Cerrar Sesión</span>
+                                <li class="salir_bt waves-effect">
+                                    <a href="javascript:void(0);" class="lista"><i class="material-icons">power_settings_new</i><span> Cerrar Sesión</span></a>
                                 </li>
                                 
                             </ul>

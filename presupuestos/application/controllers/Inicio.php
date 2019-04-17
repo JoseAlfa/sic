@@ -213,6 +213,12 @@ class Inicio extends CI_Controller {
             case 'cliente':
                 $consulta=$this->modelo->clienCount($ref);
                 break;
+            case 'user':
+                $consulta=$this->modelo->userCount($ref);
+                break;
+            case 'presupuesto':
+                $consulta=$this->modelo->preCount($ref);
+                break;
             default:
                 # code...
                 break;
@@ -239,6 +245,27 @@ class Inicio extends CI_Controller {
             }
         }
         return $permiso;
+    }
+    public function now($fecha=false,$larga=false,$now=false){
+        $consulta=$this->modelo->getDate($fecha);
+        $fecha='';
+        $this->load->helper('fecha');
+        if ($consulta!=null) {
+            foreach ($consulta as $data) {
+                $dia=$data->d;
+                $dianombre=$data->dn;
+                $mes=$data->m;
+                $mesnombre=$data->mn;
+                $ano=$data->y;
+                $hora=$data->hr;
+                if ($now) {
+                    $fecha=$data->now;
+                }else{
+                    $fecha=getDateNom($dia,$mes,$ano,$dianombre,$larga);
+                }                
+            }
+        }
+        return $fecha;
     }
     /*************************************************************************/
     /**Fin deFunciones generales para uso general de el resto de los modulos**/
@@ -345,12 +372,16 @@ class Inicio extends CI_Controller {
             $sw="error";//tipo de swal
             $iduser=$this->session->userdata('iduser');
             if ($iduser) {
-                if ($this->isAdmin($iduser)) {
+                if ($this->isAdmin($iduser,true)) {
                     $ref=$this->input->post('ref',true);
                     if ($ref) {
                         $dependencias=$this->isDepend('user',$ref);
                         if (!$dependencias) {
-                            if ($this->modelo->remCliente($ref)) {
+                            $datauser=$this->datosUsuarioSesion($ref);
+                            //var_dump($datauser);
+                            $idp=$datauser['idpersona'];
+                            //echo "Persona: ".$idp.'<br>Usuario: '.$ref;
+                            if ($this->modelo->remUserAcount($ref,$idp)) {
                                 $m="El usuario se eliminó correctamente";
                                 $o=1;
                                 $sw='success';
@@ -1045,21 +1076,22 @@ class Inicio extends CI_Controller {
                     $pago=$this->input->post('pago',true);
                     $vencimiento=$this->input->post('vencimiento',true);
                     $iva=$this->input->post('iva',true);
+                    $mas=$this->input->post('mas',true);
                     $data=array();
                     if($ref){
                         if($this->validar($cliente)){
                             $data['id_cliente']=$cliente;
                             $con=true;
                         }
-                        if ($this->validar($nom)) {
+                        if ($this->validar($nom)||$nom=='') {
                             $data['detalles']=$nom;
                             $con=true;
                         }
-                        if($this->validar($pago)){
+                        if($this->validar($pago)||$pago==''){
                             $data['forma_pago']=$pago;
                             $con=true;
                         }
-                        if ($this->validar($vencimiento)) {
+                        if ($this->validar($vencimiento)||$vencimiento) {
                             $data['vencimiento']=$vencimiento;
                             $con=true;
                         }
@@ -1067,9 +1099,13 @@ class Inicio extends CI_Controller {
                             $data['iva']=$iva;
                             $con=true;
                         }
+                        if($this->validar($mas)||$mas==''){
+                            $data['otros_datos']=$mas;
+                            $con=true;
+                        }
                     }                 
                     if ($con) {
-                        $ref=$this->modelo->updatePresupuesto($ref,$data);
+                        $ref=$this->modelo->updatePresupuesto($ref,$data,$idu);
                         if ($ref) {
                             $m="Datos actualizados correctamente.";$o=false;$sw='green';$swh="Completo";
                         }else{
@@ -1128,6 +1164,86 @@ class Inicio extends CI_Controller {
                 $m=getError('sesion');
             }
             echo json_encode(array('error'=>$o,'t'=>$swh,'m'=>$m,'sw'=>$sw,'ref'=>$ref));
+        }else{
+            $this->load->view(getError('ajax'));
+        }
+    }
+    ////////////////////////CERRAR PRESUPUESTO///////////
+    public function closePre(){
+        if ($this->input->is_ajax_request()) {
+            $idu=$this->session->userdata('iduser');
+            $m="";$o=2;$con=false;$sw="error";$swh="Error";$ref=0;
+            if ($idu) {
+                if ($this->isAdmin($idu)) {
+                    $ref=$this->input->post('ref',true);
+                    $direccion=$this->input->post('direccion',true);
+                    $telefono=$this->input->post('telefono',true);
+                    $movil=$this->input->post('movil',true);
+                    $correo=$this->input->post('correo',true);
+                    $firma=$this->input->post('firma',true);
+                    if($this->validar($ref)){
+                        $con=true;
+                    }                 
+                    if ($con) {
+                        if($this->isDepend('presupuesto',$ref)){
+                           $data=array('liberado'=>1,'fecha_fin'=>$this->now(false,false,true));
+                            $ref=$this->modelo->updatePresupuesto($ref,$data,$idu);
+                            if ($ref) {
+                                $m="Datos actualizados correctamente.";$o=1;$sw='success';$swh="Completo";
+                            }else{
+                                $m=getError('insert');
+                            } 
+                        }else{
+                            $m='No es posible realizar aoperación debido a que no ha agregado ninguna cotización';
+                        }                        
+                    }else{
+                        $m=getError('parametros');
+                    }
+                }else{//si no tiene permisos
+                    $m=getError('acceso');
+                }
+            }else{//si no hay sessio
+                $m=getError('sesion');
+            }
+            echo json_encode(array('error'=>$o,'o'=>$o,'t'=>$swh,'m'=>$m,'sw'=>$sw));
+        }else{
+            $this->load->view(getError('ajax'));
+        }
+    }
+    ////////Eliminar presupuesto
+    public function deletePre() {
+        if ($this->input->is_ajax_request()) {
+            $idu=$this->session->userdata('iduser');
+            $m="";$o=2;$con=false;$sw="error";$swh="Error";$ref=0;
+            if ($idu) {
+                if ($this->isAdmin($idu)) {
+                    $ref=$this->input->post('ref',true);
+                    $direccion=$this->input->post('direccion',true);
+                    $telefono=$this->input->post('telefono',true);
+                    $movil=$this->input->post('movil',true);
+                    $correo=$this->input->post('correo',true);
+                    $firma=$this->input->post('firma',true);
+                    if($this->validar($ref)){
+                        $con=true;
+                    }                 
+                    if ($con) {
+                           $data=array('liberado'=>1,'fecha_fin'=>$this->now(false,false,true));
+                            $ref=$this->modelo->deletePresupuesto($ref);
+                            if ($ref) {
+                                $m="Datos actualizados correctamente.";$o=1;$sw='success';$swh="Completo";
+                            }else{
+                                $m=getError('insert');
+                            }                        
+                    }else{
+                        $m=getError('parametros');
+                    }
+                }else{//si no tiene permisos
+                    $m=getError('acceso');
+                }
+            }else{//si no hay sessio
+                $m=getError('sesion');
+            }
+            echo json_encode(array('error'=>$o,'o'=>$o,'t'=>$swh,'m'=>$m,'sw'=>$sw));
         }else{
             $this->load->view(getError('ajax'));
         }
