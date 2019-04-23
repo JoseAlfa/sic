@@ -258,9 +258,27 @@ and open the template in the editor.
                     <h2 id="titulo_general">BLANK PAGE</h2>
                 </div>
                 <div class="block-body">
-                    <div class="card" id="contenedor_general">
-                        <div class="body">
-                            Error, los componentes no fueron cargados, verifique que su navegador tenga soporte y este activado el uso de java Script
+                    <div class="card">
+                        <!-- Page Loader -->
+                        <div class="page-loader-wrapper panelLoad" style="display: none">
+                            <div class="loader">
+                                <div class="preloader">
+                                    <div class="spinner-layer pl-red">
+                                        <div class="circle-clipper left">
+                                            <div class="circle"></div>
+                                        </div>
+                                        <div class="circle-clipper right">
+                                            <div class="circle"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p>Porfavor Espere...</p>
+                            </div>
+                        </div>
+                        <div id="contenedor_general">
+                            <div class="body">
+                                Error, los componentes no fueron cargados, verifique que su navegador tenga soporte y este activado el uso de java Script
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -301,19 +319,19 @@ and open the template in the editor.
                                     <div class="col-sm-12">
                                         <div class="form-group form-float">
                                             <div class="form-line">
-                                                <input type="password" id="ps" class="form-control" required />
+                                                <input type="password" id="ps" class="form-control" required autocomplete="off" />
                                                 <label class="form-label">Contraseña anterior</label>
                                             </div>
                                         </div>
                                         <div class="form-group form-float">
                                             <div class="form-line">
-                                                <input type="password" id="ps1" class="form-control" required />
+                                                <input type="password" id="ps1" class="form-control" required autocomplete="off" />
                                                 <label class="form-label">Nueva contraseña</label>
                                             </div>
                                         </div>
                                         <div class="form-group form-float">
                                             <div class="form-line">
-                                                <input type="password" id="ps2" class="form-control" required />
+                                                <input type="password" id="ps2" class="form-control" required autocomplete="off" />
                                                 <label class="form-label">Repite nueva contraseña</label>
                                             </div>
                                         </div>
@@ -351,6 +369,14 @@ and open the template in the editor.
                         </div>
                         <!-- #END# Page Loader -->
                         <div id="nuevo_panel"></div>
+                    </div>
+                </div>
+            </div>
+        <!-- Default Size -->
+            <div class="modal fade" id="proInpre_modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+                <div class="modal-dialog modal-sm min_mod" role="document">
+                    <div class="modal-content">
+                        <div id="proInPre_panel"></div>
                     </div>
                 </div>
             </div>

@@ -7,6 +7,16 @@ and open the template in the editor.
     Created on : 18/01/2019, 07:23:43 PM
     Author     : José Alfredo Jimenez Sanchez
 */
+#nuevo_modal{
+  overflow: auto;
+}
+.fix{
+  position: absolute;
+  margin-top: -20px;
+}
+.panelLoad{
+  position: absolute !important;
+}
 .mybtnmore a{
     color: #999;
     font-size: 1.5rem;

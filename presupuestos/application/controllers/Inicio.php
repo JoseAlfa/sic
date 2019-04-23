@@ -1079,31 +1079,34 @@ class Inicio extends CI_Controller {
                     $mas=$this->input->post('mas',true);
                     $data=array();
                     if($ref){
-                        if($this->validar($cliente)){
-                            $data['id_cliente']=$cliente;
-                            $con=true;
-                        }
-                        if ($this->validar($nom)||$nom=='') {
-                            $data['detalles']=$nom;
-                            $con=true;
-                        }
-                        if($this->validar($pago)||$pago==''){
-                            $data['forma_pago']=$pago;
-                            $con=true;
-                        }
-                        if ($this->validar($vencimiento)||$vencimiento) {
-                            $data['vencimiento']=$vencimiento;
-                            $con=true;
-                        }
                         if ($this->validar($iva)) {
                             $data['iva']=$iva;
                             $con=true;
+                        }else{
+                            if($this->validar($cliente)){
+                                $data['id_cliente']=$cliente;
+                                $con=true;
+                            }else{
+                                if ($this->validar($nom)||$nom=='') {
+                                    $data['detalles']=$nom;
+                                    $con=true;
+                                }
+                                if($this->validar($pago)||$pago==''){
+                                    $data['forma_pago']=$pago;
+                                    $con=true;
+                                }
+                                if ($this->validar($vencimiento)||$vencimiento) {
+                                    $data['vencimiento']=$vencimiento;
+                                    $con=true;
+                                }
+                                if($this->validar($mas)||$mas==''){
+                                    $data['otros_datos']=$mas;
+                                    $con=true;
+                                }
+                            }
                         }
-                        if($this->validar($mas)||$mas==''){
-                            $data['otros_datos']=$mas;
-                            $con=true;
-                        }
-                    }                 
+                    }     
+                    ///echo json_encode($data);            
                     if ($con) {
                         $ref=$this->modelo->updatePresupuesto($ref,$data,$idu);
                         if ($ref) {
@@ -1167,6 +1170,61 @@ class Inicio extends CI_Controller {
         }else{
             $this->load->view(getError('ajax'));
         }
+    }
+    public function updateProInPre(){
+        if ($this->input->is_ajax_request()) {
+            $idu=$this->session->userdata('iduser');
+            $m="";$o=true;$con=false;$sw="error";$swh="Error";$ref=0;$tot=0;$opt=2;
+            if ($idu) {
+                if ($this->isAdmin($idu,false)) {
+                    $ref=$this->input->post('ref',true);
+                    $detalle=$this->input->post('detalle',true);
+                    $precio=$this->input->post('precio',true);
+                    $cantidad=$this->input->post('cantidad',true);
+                    $pre=$this->input->post('refpre',true);
+                    if(true){
+                        if($this->validar($precio)){
+                            if ($this->validar($cantidad)) {
+                                if ($this->validar($ref)) {
+                                    //if ($this->validar($detalle)) {
+                                        $con=true;
+                                    //}
+                                }
+                            }
+                        }
+                    }                 
+                    if ($con) {
+                        $data=array('precio'=>$precio,'cantidad'=>$cantidad,'detalles'=>$detalle);
+                        $res=$this->modelo->updateProInPre($ref,$data);
+                        if ($res) {
+                            $tot=$this->totalProInPre($pre);
+                            $m="Datos actualizados correctamente.";$o=false;$sw='success';$swh="Completo";$opt=1;
+                        }else{
+                            $m=getError('insert');
+                        }
+                    }else{
+                        $m=getError('parametros');
+                    }
+                }else{//si no tiene permisos
+                    $m=getError('acceso');
+                }
+            }else{//si no hay sessio
+                $m=getError('sesion');
+            }
+            echo json_encode(array('o'=>$opt,'error'=>$o,'t'=>$swh,'m'=>$m,'sw'=>$sw,'ref'=>$ref,'total'=>$tot));
+        }else{
+            $this->load->view(getError('ajax'));
+        }
+    }
+    ///total en presupuesto
+    private function totalProInPre($ref){
+        $consulta=$this->modelo->dataProInPre($ref);
+        $total=0;
+        foreach ($consulta as $i => $val) {
+            $sub=$val->pre*$val->cant;
+            $total=$total+$sub;
+        }
+        return $total;
     }
     ////////////////////////CERRAR PRESUPUESTO///////////
     public function closePre(){

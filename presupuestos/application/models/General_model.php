@@ -435,6 +435,19 @@ class General_model extends CI_Model {
             return false;
         }
     }
+    public function updateProInPre($ref,$data){
+        $this->db->where('id_pre_pro',$ref);
+        return $this->db->update('presupuesto_productos',$data);
+    }
+    public function dataProInPre($ref){
+        $this->db->select('pp.id_pre_pro id,pp.precio pre,pp.cantidad cant,pp.detalles det,p.nombre pro');
+        $this->db->from('presupuesto_productos pp');
+        $this->db->where('pp.id_presupuesto',$ref);
+        $this->db->join('productos p','pp.id_producto=p.id_producto');
+        $res=$this->db->get();
+        //echo $this->db->last_query();
+        return $res->result();
+    }
     public function updatePresupuesto($ref,$data,$idu){
         $this->db->where('id_usuario',$idu);
         $this->db->where('id_presupuesto',$ref);

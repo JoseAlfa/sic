@@ -56,7 +56,7 @@
                 </div>
             </div>
             <br>
-            <form onsubmit="<?php if (isset($onlyView)){ ?> $.sic.saveDetallesEdit();<?php } ?>return false;">
+            <form onsubmit="<?php if (isset($onlyView)){ ?> $.sic.saveGeneral();<?php } ?>return false;">
                 <div class="form-group form-float">
                     <div class="form-line">
                         <input type="text" id="detallesPreData" class="form-control" required <?php if(isset($detalle))echo 'value="'.$detalle.'"'; if (!isset($onlyView)) {echo "disabled";} ?> />
@@ -69,7 +69,7 @@
             <?php } ?>
 
             </form><br>
-            <form onsubmit="<?php if (isset($onlyView)){ ?> $.sic.saveOtrosPreData();<?php } ?>return false;">
+            <form onsubmit="<?php if (isset($onlyView)){ ?> $.sic.saveGeneral();<?php } ?>return false;">
                 <div class="row">
                     <div class="col-xs-12">
                         <h3>Otros datos</h3>
@@ -142,9 +142,16 @@
             <div class="row">
                 <div class="col-xs-12 col-sm-6"></div>
                 <div class="col-xs-12 col-sm-6">
-                    Subtotal: <b id="subtotalPre">$ <?php if(isset($totalfin)){echo $totalfin;} else {echo 0;} ?></b> 
+                    Subtotal: <b id="subtotalPre">$ <?php if(isset($productosData['total'])){echo $productosData['total'];} else {echo 0;} ?></b> 
                     + IVA <b class="detail" id="ivash"><?php if(isset($iva)){echo $iva;}else{echo 16;} ?>%</b> 
-                    Total: <b id="totalfin">$ <?php if(isset($totalfin)){echo $totalfin;} else {echo 0;} ?></b>
+                    Total: <b id="totalfin">$ <?php 
+                    if(isset($productosData['total'])){
+                        $iv=16;
+                        if(isset($iva)){
+                            $iv=$iva;
+                        }
+                        echo (($productosData['total']/100)*$iva)+$productosData['total'];
+                    } else {echo 0;} ?></b>
                 </div>
             </div>
             <hr>
@@ -160,7 +167,9 @@
                     </thead>
 
                     <tbody id="presupuestoList">
-                        
+                        <?php if (isset($productosData['productos'])) {
+                            echo $productosData['productos'];
+                        } ?>
                     </tbody>
                 </table>
             </div>
@@ -207,7 +216,7 @@
         <?php }?>
         $.sic.json=<?php echo $json; ?>;
         $.sic.iva=<?php if(isset($iva)){echo $iva;}else{echo 16;} ?>;
-        $.sic.totalfin=<?php if(isset($totalfin)){echo $totalfin;} else {echo 0;} ?>;
+        $.sic.totalfin=<?php if(isset($productosData['total'])){echo $productosData['total'];} else {echo 0;} ?>;
         $.sic.idpreinwindow=<?php if(isset($idpre)){echo $idpre;} else {echo 0;} ?>;
         $("#deletePreSure").click(function(event) {
             texto=<?php if(isset($plantilla)){echo '"a plantilla será eliminada"';}else{ echo '"e presupuesto será eliminado"';} ?>;
@@ -276,6 +285,76 @@
                 $.sic.server(datos);            
             });
         });
+        $(".detail").click(function(event) {
+            elem=$(this);
+            $.sic.editDataProInPre(elem);
+        });
+        $.sic.editDataProInPre=function(elem) {
+            info=elem.attr('data-pre').toString();
+            try{
+                info=$.parseJSON(info);
+                //console.log(info);
+                html='<form onsubmit="$.sic.updateProInPre('+info.ref+',\''+info.nombre+'\');return false;" accept-charset="utf-8"><div class="modal-header"><div class="row"></div><h3 class="modal-title" id="defaultModalLabel">'+info.nombre+'</h3></div><div class="modal-body">';
+                html+='<div class="row">';
+                html+='<div class="col-xs-12">'+$.sic.generateInput({type:'number',nombre:'Cantidad',value:info.cantidad,id:'cantEdit'})+'</div>';
+                html+='<div class="col-xs-12">'+$.sic.generateInput({type:'number',nombre:'Precio',value:info.precio,id:'preEdit'})+'</div>';
+                html+='<div class="col-xs-12">'+$.sic.generateInput({type:'text',nombre:'Detalles',value:info.detalle,id:'detEdit'})+'</div>';
+                html+='</div></div><div class="modal-footer"><button type="button" class="btn bg-red waves-effect" data-dismiss="modal">CANCELAR</button><button type="submit" class="btn bg-blue waves-effect">GUARDAR</button></div></form>';
+                $("#proInPre_panel").html(html);
+                $("#proInpre_modal").modal('show');
+            }catch(e){console.log(e);$.sic.alert('Algo va mal','red')};
+        }
+        $.sic.updateProInPre=function (ref,nom) {
+            //console.log(el);return false;
+            cant=$("#cantEdit");
+            pre=$("#preEdit");
+            det=$("#detEdit").val();
+            hacer=false;
+            if (cant.val()!=''&& cant.val()!='0') {
+                if(pre.val()!=''&& pre.val()!='0'){
+                    hacer=true;
+                }else{
+                    pre.focus();
+                }
+            }else{
+                cant.focus();
+            }
+            if (hacer) {
+                param={cantidad:cant.val(),precio:pre.val(),ref:ref,detalle:det,refpre:$.sic.idpreinwindow};
+                datos={
+                    type:'post',
+                    data:param,
+                    url:'./Inicio/updateProInPre',
+                    success:function (data) {
+                        try{
+                            js=$.parseJSON(data);
+                            swal(js.t, js.m, js.sw);
+                            if (js.o==1) {
+                                $.sic.totalfin=js.total;
+                                cant=cant.val();
+                                pre=pre.val();
+                                total=cant*pre;
+                                $("#proinpre"+js.ref).attr('data-pre','{"ref":'+js.ref+',"precio": '+pre+',"cantidad": '+cant+',"nombre":"'+nom+'","detalle":"'+det+'"}');
+                                $("#proinpre"+js.ref).html('<td>'+nom+'</td><td>$ '+pre+'</td><td>'+cant+'</td><td>$ '+total+'</td>');
+                                $("#subtotalPre").html('$ '+$.sic.totalfin);
+                                $("#totalfin").html('$ '+$.sic.calculeFinal());
+                                $("#proInpre_modal").modal('hide');
+                                /*$(".detail").click(function(event) {
+                                    elem=$(this);
+                                    $.sic.editDataProInPre(elem);
+                                });*/
+                            }
+                        }catch(e){
+                            swal('Error', $.sic.mjserr, 'error');
+                        }
+                    },
+                    error:function (qw,er,th) {
+                        swal('Error', $.sic.mserr, 'error');
+                    }
+                };
+                $.sic.server(datos);
+            }
+        }
         <?php if (isset($onlyView)){ ?>
         $("#generarPreSure").click(function(event) {
             swal({
@@ -405,23 +484,15 @@
             }
             $.sic.saveGeneral({cliente:valor,ref:$.sic.idpreinwindow});
         }
-        $.sic.saveDetallesEdit=function () {
-            detalles=$("#detallesPreData").val();
-            if (detalles) {
-                if (detalles.length>10) {
-                    $.sic.saveGeneral({detalle:detalles,ref:$.sic.idpreinwindow});
-                }else{$.sic.alert('Por favor, sea mas específico','org');}
-            }
-            
-        }
-        $.sic.saveOtrosPreData=function () {
-            pago=$("#detallesPagoData").val();
-            vencimiento=$("#vencimientoData").val();
-            mas=$("#otrosDetallesData").val();
-            idpre=$.sic.idpreinwindow;
-            $.sic.saveGeneral({pago:pago,vencimiento:vencimiento,ref:idpre,mas:mas});
-        }
         $.sic.saveGeneral=function (params) {
+            if(!params){
+                detalle=$("#detallesPreData").val();
+                pago=$("#detallesPagoData").val();
+                vencimiento=$("#vencimientoData").val();
+                mas=$("#otrosDetallesData").val();
+                idpre=$.sic.idpreinwindow;
+                params={pago:pago,vencimiento:vencimiento,ref:idpre,mas:mas,detalle:detalle};
+            }
             datos={
                 url:'./Inicio/uddategeneralInPre',
                 type:'post',
@@ -465,10 +536,15 @@
                             $.sic.alert(r.m,r.sw);
                             if (r.error==false) {
                                 document.getElementById('addProform').reset();
-                                $("#presupuestoList").append('<tr class="detail" onclick="($(this));" data-id="'+r.ref+'"><td>'+nombre+'</td><td>'+precio+'</td><td>'+cantidad+'</td><td>'+total+'</td></tr>');
+                                // class="detail"
+                                $("#presupuestoList").append('<tr id="proinpre'+r.ref+'" class="detail"  data-pre=\'{"ref":'+r.ref+',"precio": '+precio+',"cantidad": '+cantidad+',"nombre":"'+nombre+'","detalle":""}\'><td>'+nombre+'</td><td>$ '+precio+'</td><td>'+cantidad+'</td><td>$ '+total+'</td></tr>');
                                 $.sic.totalfin=$.sic.totalfin+total;
                                 $("#subtotalPre").html('$ '+$.sic.totalfin);
                                 $("#totalfin").html('$ '+$.sic.calculeFinal());
+                                $(".detail").click(function(event) {
+                                    elem=$(this);
+                                    $.sic.editDataProInPre(elem);
+                                });
                             }
                         }catch(e){
                             $.sic.alert('Error inesperado, porfavor intente más tarde','red');

@@ -57,7 +57,7 @@ inicio de sesión SIC todos los derechos reservados 2019.
                                 <i class="material-icons" style="font-size: 24px;">account_circle</i>
                             </span>
                             <div class="form-line">
-                                <input type="text" class="form-control" name="u" placeholder="Usuario" required id="usr" autofocus>
+                                <input type="text" class="form-control" name="u" placeholder="Usuario" required id="usr" autofocus autocomplete="off">
                             </div>
                         </div>
                         <div class="input-group">
@@ -65,7 +65,7 @@ inicio de sesión SIC todos los derechos reservados 2019.
                                 <i class="material-icons" style="font-size: 24px;">vpn_key</i>
                             </span>
                             <div class="form-line">
-                                <input type="password" class="form-control" name="p" placeholder="Contraseña" required id="pas">
+                                <input type="password" class="form-control" name="p" placeholder="Contraseña" required id="pas" autocomplete="off">
                             </div>
                         </div>
                         <div id="mensaje"></div>

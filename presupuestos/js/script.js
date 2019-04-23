@@ -22,9 +22,9 @@
 			titulo=$('#titulo_general');
 		}
 		if (load==undefined|| typeof load === "string") {
-			load=$('.page-loader-wrapper');
+			load=$('.panelLoad');
 		}
-		load.fadeIn();
+		if($.sic.loaded){load.fadeIn();}
 		titulo.html(head);
 		merr='Error, intente más tarde';
 		var ret=false;
@@ -176,9 +176,20 @@
     	html+='</div></div><div class="modal-footer"><button type="button" class="btn bg-red waves-effect" data-dismiss="modal">CERRAR</button></div>';
     	setTimeout(function() {$("#nuevo_panel").html(html);$(".nuevo_load").fadeOut();}, 2000);
     	console.log(data);
-    }
+    },
+    generateInput:function (data) {
+    	if(!data.type){type='text';}
+    	if (data.value) {data.value=' value="'+data.value+'" ';}
+    	if (data.id) {data.id=' id="'+data.id+'" ';}
+    	if (data.class) {data.class=' class="'+data.class+'" ';}
+    	if (data.name) {data.name=' name="'+data.name+'" ';}
+    	if (data.required) {data.required='required';}
+    	return '<div class="form-group form-float"><div class="form-line"><input type="'+data.type+'" '+data.id+data.name+data.value+' class="form-control" '+data.required+' /><label class="form-label fix">'+data.nombre+'</label></div></div>';
+    },
+    loaded:false
 };
 $(document).ready(function() {
+	$.sic.loaded=true;
 	/*panel*/
 	$('.ml-menu li').click(function(event) {
 		event.preventDefault();
@@ -191,7 +202,7 @@ $(document).ready(function() {
 			$("#cl").click();
 		}
 	});
-	$.sic.load('getPresupuestos','Recientes');
+	setTimeout(function () { $.sic.load('getPresupuestos','Recientes'); }, 50);
 	/*fin panel*/
 	$(".ajuestes_bt").click(function(event) {
 		event.preventDefault();

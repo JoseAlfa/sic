@@ -559,6 +559,18 @@ class Load_view extends CI_Controller {
         return $print.='</tbody></table></div>';
     }
 
+    private function dataProInPre($ref){
+        $consulta=$this->modelo->dataProInPre($ref);
+        $total=0;$productos='';
+        foreach ($consulta as $i => $val) {
+            $sub=$val->pre*$val->cant;
+            $productos.='<tr id="proinpre'.$val->id.'" class="detail" data-pre=\'{"ref":'.$val->id.',"precio": '.$val->pre.',"cantidad": '.$val->cant.',"nombre":"'.$val->pro.'","detalle":"'.$val->det.'"}\'>
+                <td>'.$val->pro.'</td><td>$ '.$val->pre.'</td><td>'.$val->cant.'</td><td>$ '.$sub.'</td>
+            </tr>';
+            $total=$total+$sub;
+        }
+        return array('productos'=>$productos,'total'=>$total);
+    }
     public function presupuesto(){
          if ($this->input->is_ajax_request()) {
             $idu=$this->session->userdata('iduser');
@@ -589,6 +601,7 @@ class Load_view extends CI_Controller {
                             $data['clientes']=$this->clientesSel($val->idc);
                             $data['productos']=$this->productosSel();
                             $data['json']=$this->productsJSON();
+                            $data['productosData']=$this->dataProInPre($val->id);
                             $this->load->view('ajax/presupuestos',$data);
                         }
                     }
@@ -729,6 +742,7 @@ class Load_view extends CI_Controller {
                             $data['clientes']=$this->clientesSel($val->idc);
                             $data['productos']=$this->productosSel();
                             $data['json']=$this->productsJSON();
+                            $data['productosData']=$this->dataProInPre($val->id);
                             $data['plantilla']=true;
                             echo '<div class="modal-header">
                                     <div class="row"></div>
