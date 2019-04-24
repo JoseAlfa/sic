@@ -1037,6 +1037,9 @@ class Inicio extends CI_Controller {
                 if ($this->isAdmin($idu)) {
                     $nom=$this->input->post('detalle',true);
                     $as=$this->input->post('as',true);
+                    if($as=='1'||$as==1){
+                        $clave="SICPLA00";
+                    }
                     if ($this->validar($nom)) {
                         $con=true;
                     }
@@ -1045,7 +1048,7 @@ class Inicio extends CI_Controller {
                         $ref=$this->modelo->nuevoPresupuesto($data);
                         if ($ref) {
                             $clave.=$ref;
-                            $this->modelo->updatePresupuesto($ref,array('clave'=>$clave));
+                            $this->modelo->updatePresupuesto($ref,array('clave'=>$clave),$idu);
                             $m="Perfecto, ahora completa los datos del prespuesto.";$o=false;$sw='success';$swh="Completo";
                         }else{
                             $m=getError('insert');
@@ -1216,6 +1219,40 @@ class Inicio extends CI_Controller {
             $this->load->view(getError('ajax'));
         }
     }
+    ///Eliminar producto de presupuesto
+    public function deleteProInPre() {
+        if ($this->input->is_ajax_request()) {
+            $idu=$this->session->userdata('iduser');
+            $m="";$o=true;$con=false;$sw="error";$swh="Error";$ref=0;$tot=0;$opt=2;
+            if ($idu) {
+                if ($this->isAdmin($idu,false)) {
+                    $ref=$this->input->post('ref',true);
+                    $pre=$this->input->post('pre',true);
+                    if ($this->validar($ref)) {
+                        $con=true;
+                    }
+                                          
+                    if ($con) {
+                        if ($this->modelo->deleteProInPre($ref)) {
+                            $tot=$this->totalProInPre($pre);
+                            $m="Se eliminó coreectamente.";$o=false;$sw='success';$swh="Completo";$opt=1;
+                        }else{
+                            $m='La operación no pudo ser realizada';
+                        }
+                    }else{
+                        $m=getError('parametros');
+                    }
+                }else{//si no tiene permisos
+                    $m=getError('acceso');
+                }
+            }else{//si no hay sessio
+                $m=getError('sesion');
+            }
+            echo json_encode(array('o'=>$opt,'error'=>$o,'t'=>$swh,'m'=>$m,'sw'=>$sw,'total'=>$tot));
+        }else{
+            $this->load->view(getError('ajax'));
+        }
+    }
     ///total en presupuesto
     private function totalProInPre($ref){
         $consulta=$this->modelo->dataProInPre($ref);
@@ -1302,6 +1339,68 @@ class Inicio extends CI_Controller {
                 $m=getError('sesion');
             }
             echo json_encode(array('error'=>$o,'o'=>$o,'t'=>$swh,'m'=>$m,'sw'=>$sw));
+        }else{
+            $this->load->view(getError('ajax'));
+        }
+    }
+    public function generarPre() {
+        if ($this->input->is_ajax_request()) {
+            $idu=$this->session->userdata('iduser');
+            $m="";$o=2;$con=false;$sw="error";$swh="Error";$newref=0;$opt=2;
+            $clave="SICPRE00";
+            if ($idu) {
+                if ($this->isAdmin($idu)) {
+                    $ref=$this->input->post('ref',true);
+                    if($this->validar($ref)){
+                        $con=true;
+                    }                 
+                    if ($con) {
+                        $query=$this->modelo->recientesPre(false,1,$ref); 
+                            if ($query!=null){
+                                foreach ($query as $val) {
+                                    $data=array('id_usuario'=>$idu,'detalles'=>'No establecido','plantilla'=>'0','fecha_ini'=>$this->now(false,false,true),'forma_pago'=>$val->pago,'vencimiento'=>$val->ven,'iva'=>$val->iva);
+                                    if($val->idc){
+                                        $data['id_cliente']=$val->idc;
+                                    }
+                                    $newref=$this->modelo->nuevoPresupuesto($data);
+                                    if ($newref) {
+                                        $clave.=$newref;
+                                        $this->modelo->updatePresupuesto($newref,array('clave'=>$clave),$idu);
+                                        $m="Prespuesto creado exitosamente.\n";$o=false;$sw='success';$swh="Completo";$opt=1;
+                                    }else{
+                                        $m=getError('insert');
+                                    }
+                                }
+                                if($opt==1){
+                                    $query=$this->modelo->dataProInPre($ref);
+                                    $contador=0;
+                                    if ($query!=null) {
+                                        foreach ($query as $val) {
+                                            $data=array('id_producto'=> $val->idprod,'id_presupuesto'=>$newref,'precio'=>$val->pre,'cantidad'=>$val->cant,'detalles'=>$val->det);
+                                            if ($this->modelo->newProInpre($data)) {
+                                                $contador++;
+                                            }
+                                        }
+                                        if ($contador>0) {
+                                            if($contador>1){
+                                                $m.=$contador." productos agregados";
+                                            }else{
+                                                $m.=$contador." producto agregado";
+                                            }
+                                        }
+                                    }
+                                }
+                            }                    
+                    }else{
+                        $m=getError('parametros');
+                    }
+                }else{//si no tiene permisos
+                    $m=getError('acceso');
+                }
+            }else{//si no hay sessio
+                $m=getError('sesion');
+            }
+            echo json_encode(array('error'=>$o,'o'=>$o,'t'=>$swh,'m'=>$m,'sw'=>$sw,'o'=>$opt,'ref'=>$newref,'cve'=>$clave));
         }else{
             $this->load->view(getError('ajax'));
         }

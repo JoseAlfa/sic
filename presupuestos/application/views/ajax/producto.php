@@ -1,5 +1,5 @@
     <div class="modal-header">
-        <div class="row"></div>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 class="modal-title"><?php if (isset($nuevo)) {echo "Nuevo Producto";}else{echo "Editar Producto";}?></h3>
     </div>
     <div class="modal-body">

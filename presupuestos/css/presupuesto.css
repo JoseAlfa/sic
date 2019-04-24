@@ -10,6 +10,9 @@ and open the template in the editor.
 #nuevo_modal{
   overflow: auto;
 }
+.bootstrap-select:not([class*=col-]):not([class*=form-control]):not(.input-group-btn) {
+    width: 100% !important;
+}
 .fix{
   position: absolute;
   margin-top: -20px;
@@ -138,6 +141,12 @@ and open the template in the editor.
 .paginas{
     text-align: right;
     margin-right: 30px;
+}
+.hover{
+  cursor: pointer;
+}
+.hover:hover{
+  background-color: #e0e0e0;
 }
 .detail{
     cursor: pointer;

@@ -1,6 +1,6 @@
 <form onsubmit="$.sic.nuevoSave();return false;" id="nuevoformPro">
     <div class="modal-header">
-        <div class="row"></div>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 class="modal-title"><?php if (isset($nuevo)) {echo "Nuevo Cliente";}else{echo "Editar Cliente";}?></h3>
     </div>
     <div class="modal-body">

@@ -489,7 +489,7 @@ class Load_view extends CI_Controller {
     }
     private function productosSel($id=false) {
         $query=$this->modelo->getProductos();
-        $sel='<option value="undefined">Seleccione una opción</option>';
+        $sel='<option value="undefined">Seleccione</option>';
         if ($query!=null) {
             foreach ($query as $val) {
                 if ($val->id==$id) {
@@ -745,7 +745,7 @@ class Load_view extends CI_Controller {
                             $data['productosData']=$this->dataProInPre($val->id);
                             $data['plantilla']=true;
                             echo '<div class="modal-header">
-                                    <div class="row"></div>
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                                     <h3 class="modal-title">Plantilla</h3>
                                 </div>
                                 <div class="modal-body"><div class="card">';
@@ -771,7 +771,7 @@ class Load_view extends CI_Controller {
                 if ($this->isAdmin($idu,false)) {
                     $q=$this->input->post('q',true);///busqueda
                     $config=$this->pagConfig($q,5);//se carga configuración predeterminada
-                    $config['base_url'] = './Load_view/usuarios';//url donde estan los datos a paginar
+                    $config['base_url'] = './Load_view/getPresupuestoClose';//url donde estan los datos a paginar
                     $limit=$config['per_page'];///limete de la consulta
                     $config['total_rows'] = $this->modelo->presupuestos(false,1,$limit,$offset,false,$q,$idp);//total de registros
                     $this->jquery_pagination->initialize($config);//se inicializa la librebreria de paginación
@@ -825,7 +825,7 @@ class Load_view extends CI_Controller {
                 if ($this->isAdmin($idu)) {
                     $q=$this->input->post('q',true);///busqueda
                     $config=$this->pagConfig($q,5);//se carga configuración predeterminada
-                    $config['base_url'] = './Load_view/getPlantillas';//url donde estan los datos a paginar
+                    $config['base_url'] = './Load_view/getBorradores';//url donde estan los datos a paginar
                     $limit=$config['per_page'];///limete de la consulta
                     $config['total_rows'] = $this->modelo->presupuestosList(false,0,$limit,$offset,false,$q,$idu);//total de registros
                     if($this->isAdmin($idu,true)){
@@ -836,7 +836,7 @@ class Load_view extends CI_Controller {
                     if($this->isAdmin($idu,true)){
                         $consulta =$this->modelo->presupuestosList(false,0,$limit,$offset,true,$q);
                     }
-                    $print=$this->busquedaForm('getPlantillas',$q,'plantilla',true);///formulario de busqueda
+                    $print=$this->busquedaForm('getBorradores',$q,'plantilla',true);///formulario de busqueda
                     $encabezado=array('Detalles','Creada','Cliente');//Encabezado de la tablaa
                     if ($this->isAdmin($idu,true)) {
                         $encabezado=array('Detalles','Creada','Cliente','Creador');

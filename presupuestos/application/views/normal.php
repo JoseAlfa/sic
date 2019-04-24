@@ -111,9 +111,6 @@ and open the template in the editor.
                                 <li data-get="newPresupuesto">
                                     <a href="#">Nuevo presupuesto</a>
                                 </li>
-                                <li data-get="getPresupuestos">
-                                    <a href="#">Recientes</a>
-                                </li>
                                 <li data-get="getBorradores">
                                     <a href="#">Borradores</a>
                                 </li>
@@ -154,22 +151,10 @@ and open the template in the editor.
 
                         <li>
                             <a href="javascript:void(0);" class="menu-toggle">
-                                <i class="material-icons">supervisor_account</i>
-                                <span>Usuarios</span>
-                            </a>
-                            <ul class="ml-menu">
-                                <li data-get="usuarios"><a href="#">Usuarios del sistema</a></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0);" class="menu-toggle">
                                 <i class="material-icons">more</i>
                                 <span>Más</span>
                             </a>
                             <ul class="ml-menu">
-                                <li data-get="dataPDF">
-                                    <a href="#">Datos en PDF</a>
-                                </li>
                                 <li data-get="faq">
                                     <a href="#">Acerca de...</a>
                                 </li>
@@ -390,7 +375,7 @@ and open the template in the editor.
         <script src="./js/toastr/toastr.js"></script>
         <script src="./plugins/sweetalert/sweetalert.min.js"></script>
         <script src="./js/script.js"></script>
-        <script src="./js/adm.js"></script>
+        <script src="./js/norm.js"></script>
         <script>
             $(document).ready(function() {
                 $.sic.theme="theme-<?php echo $user['color'];?>";

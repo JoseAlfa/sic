@@ -156,7 +156,7 @@
     	ref=el.data("ref");
     	$("#nuevo_modal").modal('show');
     	$(".nuevo_load").fadeIn();
-    	html='<div class="modal-header"><div class="row"></div><h3 class="modal-title">Detalles</h3></div><div class="modal-body"><div class="row">';
+    	html='<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button><h3 class="modal-title">Detalles</h3></div><div class="modal-body"><div class="row">';
     	try{
     		//data=$.parseJSON(data);
     		html+='<div class="col-xs-12 col-sm-6 col-md-4"><b>Fecha de inicio: </b>'+ini+'</div>';
@@ -174,7 +174,8 @@
     		html+='Ocurrió un error';
     	}
     	html+='</div></div><div class="modal-footer"><button type="button" class="btn bg-red waves-effect" data-dismiss="modal">CERRAR</button></div>';
-    	setTimeout(function() {$("#nuevo_panel").html(html);$(".nuevo_load").fadeOut();}, 2000);
+    	$("#nuevo_panel").html(html);
+    	setTimeout(function() {$(".nuevo_load").fadeOut();}, 2000);
     	console.log(data);
     },
     generateInput:function (data) {
@@ -202,7 +203,6 @@ $(document).ready(function() {
 			$("#cl").click();
 		}
 	});
-	setTimeout(function () { $.sic.load('getPresupuestos','Recientes'); }, 50);
 	/*fin panel*/
 	$(".ajuestes_bt").click(function(event) {
 		event.preventDefault();

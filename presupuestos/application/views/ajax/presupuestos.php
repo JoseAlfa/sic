@@ -143,7 +143,7 @@
                 <div class="col-xs-12 col-sm-6"></div>
                 <div class="col-xs-12 col-sm-6">
                     Subtotal: <b id="subtotalPre">$ <?php if(isset($productosData['total'])){echo $productosData['total'];} else {echo 0;} ?></b> 
-                    + IVA <b class="detail" id="ivash"><?php if(isset($iva)){echo $iva;}else{echo 16;} ?>%</b> 
+                    + IVA <b class="hover" id="ivash"><?php if(isset($iva)){echo $iva;}else{echo 16;} ?>%</b> 
                     Total: <b id="totalfin">$ <?php 
                     if(isset($productosData['total'])){
                         $iv=16;
@@ -182,6 +182,7 @@
     <div class="modal-dialog " role="document">
         <div class="modal-content">
             <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 <h3 class="modal-title" id="smallModalLabel">Antes de empezar <small>Ingrese los siguientes datos</small></h3>
             </div>
             <div class="modal-body">
@@ -294,11 +295,12 @@
             try{
                 info=$.parseJSON(info);
                 //console.log(info);
-                html='<form onsubmit="$.sic.updateProInPre('+info.ref+',\''+info.nombre+'\');return false;" accept-charset="utf-8"><div class="modal-header"><div class="row"></div><h3 class="modal-title" id="defaultModalLabel">'+info.nombre+'</h3></div><div class="modal-body">';
+                html='<form onsubmit="$.sic.updateProInPre('+info.ref+',\''+info.nombre+'\');return false;" accept-charset="utf-8"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button><h3 class="modal-title" id="defaultModalLabel">'+info.nombre+'</h3></div><div class="modal-body">';
                 html+='<div class="row">';
                 html+='<div class="col-xs-12">'+$.sic.generateInput({type:'number',nombre:'Cantidad',value:info.cantidad,id:'cantEdit'})+'</div>';
                 html+='<div class="col-xs-12">'+$.sic.generateInput({type:'number',nombre:'Precio',value:info.precio,id:'preEdit'})+'</div>';
                 html+='<div class="col-xs-12">'+$.sic.generateInput({type:'text',nombre:'Detalles',value:info.detalle,id:'detEdit'})+'</div>';
+                html+='<div class="col-xs-12"><button type="button" class="btn theme waves-effect btn-block" onclick="$.sic.deleteProInPre('+info.ref+')">ELIMINAR</button></div>';
                 html+='</div></div><div class="modal-footer"><button type="button" class="btn bg-red waves-effect" data-dismiss="modal">CANCELAR</button><button type="submit" class="btn bg-blue waves-effect">GUARDAR</button></div></form>';
                 $("#proInPre_panel").html(html);
                 $("#proInpre_modal").modal('show');
@@ -355,6 +357,44 @@
                 $.sic.server(datos);
             }
         }
+        $.sic.deleteProInPre=function (ref) {
+            swal({
+                title: "¡IMPORTANTE!",
+                text: "El elemento sera eliminado definitivamente, ¿aún asi desea continuar?",
+                type: "warning",
+                showCancelButton: true,
+                closeOnConfirm: false,
+                showLoaderOnConfirm: true,
+                confirmButtonText:'Continuar',
+                cancelButtonText:'Cancelar'
+            }, function () {
+                datos={
+                    url:'./Inicio/deleteProInPre',
+                    type:'post',
+                    data:{ref:ref,pre:$.sic.idpreinwindow},
+                    success:function (data) {
+                        try{
+                            js=$.parseJSON(data);
+                            swal(js.t, js.m, js.sw);
+                            if (js.o==1) {
+                                $.sic.totalfin=js.total;
+                                $("#subtotalPre").html('$ '+$.sic.totalfin);
+                                $("#totalfin").html('$ '+$.sic.calculeFinal());
+                                $("#proinpre"+ref).remove();
+                                $("#proInpre_modal").modal('hide');
+                                $("#proInPre_panel").html('html');
+                            }
+                        }catch(e){
+                            swal('Error', $.sic.mjserr, 'error');
+                        }
+                    },
+                    error:function (qw,er,th) {
+                        swal('Error', $.sic.mserr, 'error');
+                    }
+                };
+                $.sic.server(datos);            
+            });
+        }
         <?php if (isset($onlyView)){ ?>
         $("#generarPreSure").click(function(event) {
             swal({
@@ -376,7 +416,9 @@
                             js=$.parseJSON(data);
                             swal(js.t, js.m, js.sw);
                             if (js.o==1) {
-                                $.sic.load('getPresupuestoClose','Presupuestos cerrados');
+                                $("#nuevo_modal").modal('hide');
+                                $("#nuevo_panel").html('html');
+                                $.sic.load('presupuesto',js.cve+' - Presupuesto',{ref:js.ref});
                             }
                         }catch(e){
                             swal('Error', $.sic.mjserr, 'error');
@@ -556,6 +598,7 @@
                 $.sic.alert('Algo va mal, porfavor recargue la página');
             }                        
         }
+        $.sic.contadorLoadData=0;
         $.sic.loadProdata=function (sel) {
             if (sel=="undefined") {
                 $("#precioPre").val("");
@@ -564,7 +607,7 @@
                 return false;
             }
             datos=$.sic.finId(sel);
-            console.log(datos);
+            //console.log(datos);
             if (datos) {
                 $("#precioPre").val(datos.prec);
                 $("#cantPre").val(1);
@@ -572,7 +615,12 @@
                     $("#medidaShow").html(datos.med);
                 }else{
                    $("#medidaShow").html("Cant."); 
-                }                
+                } 
+                if ($.sic.contadorLoadData<3) {
+                    $.sic.contadorLoadData++;
+                    $.AdminBSB.input.activate();
+                }
+                               
             }
             
         }
