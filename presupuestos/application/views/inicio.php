@@ -168,7 +168,7 @@ and open the template in the editor.
                             </a>
                             <ul class="ml-menu">
                                 <li data-get="dataPDF">
-                                    <a href="#">Datos en PDF</a>
+                                    <a href="#">Datos de la empresa</a>
                                 </li>
                                 <li data-get="faq">
                                     <a href="#">Acerca de...</a>
@@ -214,6 +214,9 @@ and open the template in the editor.
                         <div class="demo-settings">
                             <p>TEMA</p>
                             <ul class="setting-list">
+                                <li class="c_pass waves-effect">
+                                    <a href="javascript:void(0);"class="lista"><i class="material-icons">account_circle</i><span><?php echo $person['nombre'].' '.$person['apellidos'];?></span></a>
+                                </li>
                                 <li class="demo-choose-skin">
                                     <a class="red tema" data-theme="red"></a>
                                     <a class="tema pink" data-theme="pink"></a>

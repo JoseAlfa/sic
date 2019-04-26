@@ -48,7 +48,7 @@ inicio de sesión SIC todos los derechos reservados 2019.
             <div class="logo">
                 <img src="./img/logos/logo.png" alt="">
             </div>
-            <div class="card">
+            <div class="card" style="margin-bottom: 5px;">
                 <div class="body">
                     <form id="loginForm" method="POST">
                         <div class="msg">Sistema de Gestión de Presupuestos</div>
@@ -90,6 +90,7 @@ inicio de sesión SIC todos los derechos reservados 2019.
                 </div>
             </div>
             <div class="logo">
+                <i class="material-icons" style="cursor: pointer;" onclick="window.location.href='../';">home</i><br>
                 <small class="text-inf">Todos los derechos reservados &copy 2019. Soluciones Integrales & Comunicación</small>
             </div>
         </div>

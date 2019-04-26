@@ -19,6 +19,7 @@ and open the template in the editor.
 }
 .panelLoad{
   position: absolute !important;
+  z-index: 20;
 }
 .mybtnmore a{
     color: #999;

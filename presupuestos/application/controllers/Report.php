@@ -345,4 +345,81 @@ class Report extends CI_Controller {
         //Close and output PDF document
         $pdf->Output($datos_pre['clave'].'.pdf', 'I');
     }
+    ////////Generar curriculum empresarial
+    public function curriculum() {
+        $empresa=$this->empresa();
+        if (!is_array($empresa)) {
+            echo "No se encontranron datos de la empresa, porfavor agrégalos";
+            exit();
+        }
+        $this->load->library('Pdf');
+        $pdf = new Pdf('P', 'mm', 'A4', true, 'UTF-8', false);
+        $pdf->setPrintHeader(false);
+        // set document information
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('Gesion de presupuesto');
+        $pdf->SetTitle('Curriculum empresarial');
+        $pdf->SetSubject('Presupuesto');
+        $pdf->SetKeywords('Presupuesto');
+
+        // set margins
+        $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+
+
+        // set auto page breaks
+        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+        // set image scale factor
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+        // set some language-dependent strings (optional)
+        if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+            require_once(dirname(__FILE__).'/lang/eng.php');
+            $pdf->setLanguageArray($l);
+        }
+
+        // ---------------------------------------------------------
+
+
+        // add a page
+        $pdf->AddPage();
+        $pdf->SetFont('helvetica', '', 10);
+
+        // -----------------------------------------------------------------------------
+        $back='#e4f0f5';
+        $lineColor='#3d7e9a';
+        $style='
+        <style>
+            th{
+                font-weight: bolder;
+                padding-left:10px;
+            }
+            td{
+                padding-left:10px;
+            }
+        </style>';
+        $tbl = $style.'
+        <table cellspacing="0" cellpadding="1" border="0">
+            <tr>
+                <td style="width:30px;" rowspan="2"></td>
+                <td rowspan="2" style="width:250px;"><img height="100px" src="./img/logos/logo.png" alt="test alt attribute" border="0"></td>
+                <td style="width:50px;" rowspan="2"></td>
+                <td style="text-align:center;width:280px;"><br></td>
+            </tr>
+            <tr>
+                <td style="text-align:center;width:280px;"><b>'.$empresa['direccion'].'
+                                Teléfono: '.$empresa['telefono'].', Móvil: '.$empresa['movil'].'
+                                e-mail: '.$empresa['correo'].'</b></td>
+            </tr>
+
+        </table><br>
+        ';
+
+        $pdf->writeHTML($tbl, true, false, false, false, '');
+
+
+
+        //Close and output PDF document
+        $pdf->Output('curriculum_sic.pdf', 'I');
+    }
 }

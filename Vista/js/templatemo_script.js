@@ -78,6 +78,7 @@ function scrollTo(selectors)
 
     if(!$(selectors).size()) return;
     var selector_top = $(selectors).offset().top - top_menu_height;
+    console.log(selector_top);
     $('html,body').animate({ scrollTop: selector_top }, 'slow');
 
 }

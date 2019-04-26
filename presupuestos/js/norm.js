@@ -1,3 +1,3 @@
 $(document).ready(function() {
-	setTimeout(function () { $.sic.load('getBorradores','Borradores'); }, 50);
+	setTimeout(function () { $.sic.load('getPresupuestos','Recientes'); }, 50);
 });

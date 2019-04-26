@@ -2,6 +2,8 @@
 $(document).ready(function () {
     showServicios();
     showProyectos();
+    showCleintes();
+    showContacto();
 });
 
 function showProyectos(){
@@ -17,4 +19,12 @@ function showServicios(){
     };
     ajaxShow("Controlador/ajax/AjaxServicios.php", parameters, "servicios");
 }
-
+function showCleintes() {
+    var parameters={
+        action:"show"
+    };
+    ajaxShow("presupuestos/Load_view/clientesJSON", parameters, "clientes");
+}
+function showContacto() {
+    contacto();
+}

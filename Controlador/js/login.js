@@ -24,13 +24,17 @@ $(document).ready(function () {
             }
         },
         respoder:function(option,name){
+            option=option.toString();
             switch(option){
                 case "1":
                     alert("Bienvenido "+name);
-                    window.location.href = "Vista/admin.php";
+                    window.location.href = "Vista/";
                     break;
                 case "2":
                     alert("Usuario y/o contraseña incorrectos");
+                    break;
+                case "3":
+                    alert("Acceso denegado");
                     break;
                 default:
                     alert(option);

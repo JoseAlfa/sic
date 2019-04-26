@@ -85,9 +85,9 @@ class General_model extends CI_Model {
      /*************Produtos______________>**/
     public function getProductos($id=false,$limit=1000,$offset=0,$pag=true,$q='')  {
         $return=null;
-        $this->db->select("p.id_producto id,p.nombre nom,p.id_marca idmarca,p.id_tipo idtipo,p.clave cv, p.detalles det,p.imagen im,m.nombre marca,tp.nombre tipo,precio prec,medida med");
+        $this->db->select("p.id_producto id,p.nombre nom,p.id_marca idmarca,p.id_tipo idtipo,p.clave cv, p.detalles det,p.imagen im,tp.nombre tipo,precio prec,medida med");
         $this->db->from('productos p');
-        $this->db->join('marcas m','p.id_marca=m.id_marca');
+        //$this->db->join('marcas m','p.id_marca=m.id_marca');
         $this->db->join('tipos_producto tp','p.id_tipo=tp.id_tipo');
         $this->db->group_start();
         $this->db->like('p.nombre', $q);
@@ -148,6 +148,7 @@ class General_model extends CI_Model {
         if ($idmarca) {
             $this->db->where('m.id_marca',$idmarca);
             $res=$this->db->get();
+            //echo $this->db->last_query().'<br>';
             $return= $res->result();
         }else{
             if ($pag) {
@@ -158,6 +159,7 @@ class General_model extends CI_Model {
                 $return= $res->result();
             }else{
                 $res=$this->db->get();
+                //echo $this->db->last_query();
                 $return= $res->num_rows();
             }
         }
@@ -292,7 +294,7 @@ class General_model extends CI_Model {
     ///////////7clientes
     public function getClientes($idsel=false,$limit=1000000,$offset=0,$pag=true,$q='') {
          $return=null;
-        $this->db->select("c.id_cliente id,c.nombre nom,c.correo cor,c.telefono tel,c.direccion dir,c.empresa em,c.mostrar show,c.cp cp,c.atn atn");
+        $this->db->select("c.id_cliente id,c.nombre nom,c.correo cor,c.telefono tel,c.direccion dir,c.empresa em,c.mostrar show,c.cp cp,c.atn atn,c.foto fot");
         $this->db->from('clientes c');
         $this->db->group_start();
         $this->db->like('c.nombre', $q);
@@ -353,7 +355,7 @@ class General_model extends CI_Model {
         $res=$this->db->get();
         return $res->result();
     }
-    public function presupuestos($idsel=false,$type=0,$limit=1000000,$offset=0,$pag=true,$q='') {
+    public function presupuestos($idsel=false,$type=0,$limit=1000000,$offset=0,$pag=true,$q='',$iduser=false) {
          $return=null;
         $this->db->select("pr.id_presupuesto id,pr.id_cliente idc,pr.id_usuario idu,pr.clave cv,pr.detalles det, pr.plantilla pla,pr.liberado lib,pr.fecha_ini ini,pr.fecha_fin fin,p.nombre nom,p.apellidos ap, p.correo cor,p.telefono tel,pr.liberado lib,pr.forma_pago pago,pr.vencimiento ven,pr.iva iva,c.nombre cliente");
         $this->db->from('personas p');
@@ -370,9 +372,12 @@ class General_model extends CI_Model {
             $res=$this->db->get();
             $return= $res->result();
         }else{
+            $this->db->where('pr.liberado',$type);
+            $this->db->where('pr.plantilla!=','1');
+            if($iduser){
+                $this->db->where('pr.id_usuario',$iduser);
+            }
             if ($pag) {
-                $this->db->where('pr.liberado',$type);
-                $this->db->where('pr.plantilla!=','1');
                 $this->db->order_by('pr.id_presupuesto desc');
                 $this->db->limit($limit, $offset);
                 $res=$this->db->get();
@@ -401,12 +406,12 @@ class General_model extends CI_Model {
             $res=$this->db->get();
             $return= $res->result();
         }else{
+            $this->db->where('pr.plantilla',$type);
+            $this->db->where('pr.liberado!=','1');
+            if($iduser){
+                $this->db->where('pr.id_usuario',$iduser);
+            }
             if ($pag) {
-                $this->db->where('pr.plantilla',$type);
-                $this->db->where('pr.liberado!=','1');
-                if($iduser){
-                    $this->db->where('pr.id_usuario',$iduser);
-                }
                 $this->db->order_by('pr.id_presupuesto desc');
                 $this->db->limit($limit, $offset);
                 $res=$this->db->get();

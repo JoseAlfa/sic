@@ -52,7 +52,8 @@
                                 <li class="active"><a href="#templatemo-top">Inicio</a></li>
                                 <li><a href="#templatemo-blog">¿Quienes somos?</a></li>                                
                                 <li><a href="#templatemo-services">Servicios</a></li>                           
-                                <li><a href="#templatemo-portfolio">Proyectos</a></li>                                                                
+                                <li><a href="#templatemo-portfolio">Proyectos</a></li>
+                                <li><a href="#templatemo-clientes">Clientes</a></li>
                                 <li><a href="#templatemo-contact">Contacto</a></li>
                                 <li><a href="#templatemo-line-header">Marcas</a></li>
                             </ul>
@@ -213,6 +214,25 @@
                 <div class="clearfix"></div>
             </div>
         </div>
+        <!------------------------------->
+        <!---------- CLIENTES ----------->
+        <!------------------------------->
+        <div class="templatemo-service" id="templatemo-clientes">
+            <div class="container">
+                <div class="row">
+                    <div class="templatemo-line-header" >
+                        <div class="text-center">
+                            <hr class="team_hr team_hr_left hr_gray"/><span class="txt_darkgrey">CLIENTES</span>
+                            <hr class="team_hr team_hr_right hr_gray" />
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <ul class="templatemo-project-gallery" id="clientes"></ul><!-- /.gallery -->
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>      
         <!------------------------------>
         <!---------- CONTACTO ---------->
         <!------------------------------>
@@ -233,8 +253,8 @@
                         </div>
                     </div>
                     <div class="col-md-4 contact_right">                        
-                        <p><img src="Vista/images/location.png" alt="icon 1" /> Calle 20 de Noviembre, Edif. 1-4, Col. Infonavit Atasta, C.P. 86100, Villahermosa, Tabasco</p>
-                        <p><img src="Vista/images/phone1.png"  alt="icon 2" /> (044) 99-31-52-61-43  |  99-31-79-61-64</p>
+                        <p><img src="Vista/images/location.png" alt="icon 1" /> <span id="direccionEmp"></span></p>
+                        <p><img src="Vista/images/phone1.png"  alt="icon 2" /> <span id="telefonoEmp"></span></p>
                         <p>
                             <img src="Vista/images/globe.png" alt="icon 3" />
                             <a class="link_orange" href="#">
@@ -267,9 +287,9 @@
                         <img src="Vista/images/quote.png" alt="icon" />
                     </div>
                     <div class="col-md-7 tweet_txt" >
-                        <span>Alguna frase que descria la filosifía de la empresa. También, se puedn agragar valores y una pequeña descripción.</span>
+                        <span>El cliente es primero.</span>
                         <br/>
-                        <span class="twitter_user">Soluciones Integrales & Telecomunicaciones</span>
+                        <span class="twitter_user" id="empresaName">Soluciones Integrales & Telecomunicaciones</span>
                     </div>
                     <div class="col-md-2">
                     </div>
@@ -320,6 +340,11 @@
                         <div class="footer_container">
                             <ul class="list-inline">
                                 <li>
+                                    <a href="presupuestos/Report/curriculum" target="blank">
+                                        <img src="presupuestos/images/info-button.png" alt="cur" height="42px" width="42px" style="display: block;">
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="#">
                                         <span class="social-icon-fb"></span>
                                     </a>
@@ -334,7 +359,7 @@
                             <a class="btn btn-lg btn-orange" href="#" role="button" id="btn-back-to-top">Volver Arriba</a>
                             <div class="height30"></div>
                         </div>
-                        <div class="footer_bottom_content">Copyright © 2018 <a href="#">Soluciones Integrales & Comunicaciones</a></div>
+                        <div class="footer_bottom_content">Copyright © 2019 <a href="#">Soluciones Integrales & Comunicaciones</a></div>
                     </div>
                 </div>
             </div>

@@ -8,14 +8,14 @@ class ConexionBD {
     private $_connection;
     private static $_instance; //The single instance
     private $_host = "localhost";
-    private $_username = "root";
-    private $_password = "12345678";
+    private $_username = "jose";
+    private $_password = "123";
     private $_database = "sic_db";
     private static $_lastId = 0;
     
     ///funcion para retornar valoes de conexion
     public function getdb_params() {
-        return array('db_user'=> $this->_username,'db_password'=> $this->_password,'db_database'=> $this->_database,'host'=>$this->_host);
+        return array('host'=>$this->_host,'db_user'=> $this->_username,'db_password'=> $this->_password,'db_database'=> $this->_database);
     }
     /*
       Get an instance of the Database

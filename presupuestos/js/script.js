@@ -187,7 +187,13 @@
     	if (data.required) {data.required='required';}
     	return '<div class="form-group form-float"><div class="form-line"><input type="'+data.type+'" '+data.id+data.name+data.value+' class="form-control" '+data.required+' /><label class="form-label fix">'+data.nombre+'</label></div></div>';
     },
-    loaded:false
+    loaded:false,
+    imgFormat:function (type) {
+    	if(type=='image/png'||type=='image/jpeg'){
+    		return true;
+    	}
+    	return false;
+    }
 };
 $(document).ready(function() {
 	$.sic.loaded=true;

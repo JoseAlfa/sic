@@ -159,3 +159,22 @@ function doAfterDelete(response) {
             break;
     }
 }
+
+function contacto() {
+    $.ajax({
+        url: 'presupuestos/Load_view/empresa',
+        type: "post",
+        data: {},
+        success: function (response) {
+            try{
+                js=$.parseJSON(response);
+                $("#empresaName").html(js.nombre);
+                $("#telefonoEmp").html(js.telefono);
+                $("#direccionEmp").html(js.direccion);
+            }catch(e){console.log(e);}
+        },
+        error: function (xhr, req, err) {
+            console.log("No hay datos para mostrar");
+        }
+    });
+}

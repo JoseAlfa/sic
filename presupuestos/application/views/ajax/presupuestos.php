@@ -191,7 +191,7 @@
                         <b>Guardar como:</b>
                         <select name="productPre" id="saveAsPre">
                             <option value="0" selected>Presupuesto</option>
-                            <option value="1">Plantilla para resupuesto</option>
+                            <option value="1">Plantilla para presupuesto</option>
                         </select><br><br>
                     </div>
                     <div class="form-group form-float">
@@ -493,6 +493,10 @@
                                     $('#detailpreModal').modal('hide');
                                     $('#detallesPreData').val(detalles);
                                     $.sic.idpreinwindow=r.ref;
+                                    setTimeout(function() {
+                                        $('.modal-backdrop').css('display', 'none'); 
+                                        $('body').removeClass('modal-open');
+                                        $.sic.load('presupuesto',r.cve+' - Presupuesto',{ref:r.ref});}, 100);
                                 }                                
                             }catch(e){
                                 swal("Error", "El servidor no respondió como se esperaba, es posible que los datos no se hayan guardado.", "error");

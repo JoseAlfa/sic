@@ -126,11 +126,14 @@
           var Lector, 
               oFileInput = this; 
         //console.log(oFileInput.files[0]);
-          if (oFileInput.files.length === 0||oFileInput.files[0].type!='image/jpeg') {
-            //console.log('Tipo de archivo no permitido');
-            $.sic.alert('Tipo de archivo no permitido','red');
-            return false;
-          }; 
+        if (oFileInput.files.length) {
+            if (!$.sic.imgFormat(oFileInput.files[0].type)) {
+                //console.log('Tipo de archivo no permitido');
+                $.sic.alert('Tipo de archivo no permitido','red');
+                $(oFileInput).val('');
+                return false;
+            }
+        }; 
           Lector = new FileReader();
           Lector.onloadend = function(e) {
             $('#imgPrev').attr('src', e.target.result);

@@ -843,22 +843,25 @@ class Inicio extends CI_Controller {
                     $mar=$this->input->post('marca',true);
                     $pre=$this->input->post('precio',true);
                     $med=$this->input->post('medida',true);
+                    $toInsert=array('nombre' => $nom , 'clave'=>$cve,'detalles' =>$det,'id_tipo' => $tip,'precio'=>$pre,'medida'=>$med );///datos a insertar
                     if ($this->validar($nom)) {
                         if ($this->validar($cve)) {
                             if (!($tip==""||$tip=="undefined"||$tip=="0")) {
                                 if (!($mar==""||$mar=="undefined"||$mar=="0")) {
-                                    if ($this->validar($ref)) {
-                                        $con=true;
-                                        if (!$this->validar($det)) {
-                                            $det="Sin detalles";
-                                        }
+                                    $toInsert['id_marca']=$mar;
+                                }else{
+                                    $toInsert['id_marca']=null;
+                                }   
+                                if ($this->validar($ref)) {
+                                    $con=true;
+                                    if (!$this->validar($det)) {
+                                        $det="Sin detalles";
                                     }
                                 }
                             }
                         }
                     }
                     if ($con) {
-                        $toInsert=array('nombre' => $nom , 'clave'=>$cve,'detalles' =>$det,'id_tipo' => $tip,'id_marca'=>$mar,'precio'=>$pre,'medida'=>$med );///datos a insertar
                         if ($this->modelo->updatePro($toInsert,$ref)) {
                             $m="Los datos se actualizaron correctamente";$sw="success";$swh="Completo";$o=1;
                         }else{
@@ -986,6 +989,89 @@ class Inicio extends CI_Controller {
             $this->load->view(getError('ajax'));
         }
     }
+    //nombre de foto anterior de cliente
+    function fotoantcli($id)   {//consultar foto anterior de producto
+        $ret="";
+        $con=$this->modelo->getClientes($id);
+        if ($con!=null) {
+            foreach ($con as $val) {
+                $fot=$val->fot;
+                if ($fot!='cliente.png') {
+                    $ret=$fot;
+                }
+            }
+        }
+        return $ret;
+    }
+    ///Actualizar imagen de cliente
+    public function updateimgCliente(){
+        if ($this->input->is_ajax_request()) {
+            $idu=$this->session->userdata('iduser');
+            $m="";$o=2;$sw="error";$swh="Error";
+            if ($idu) {
+                if ($this->isAdmin($idu)) {
+                    $ref=$this->input->post('referencia1',true);
+                    if ($_FILES['inputImg']['name']&& $this->validar($ref)) {
+                        $this->load->helper('string');
+                        $primer=random_string('alnum', 10);    
+                        $imgname="CLI_".$idu.$primer;
+                        $imgAnt=$this->fotoantcli($ref);
+                        $mi_imagen = 'inputImg';//Nombre de la imagen segun el nme del input
+                        $config['upload_path'] = "./images/clientes/temp/";//Carpeta donde se guarda la imagen
+                        $config['file_name'] = $imgname;//Nombre del archivo
+                        $config['allowed_types'] = "jpg|jpeg|png";//Tipos de imagen
+                        $config['max_size'] = "100000";//peso máximo
+                        $config['max_width'] = "5000";//ancho máximo
+                        $config['max_height'] = "5000";//Largo máximo
+                        $this->load->library('upload', $config);//carga libreria y estblece l configurción
+                        if (!$this->upload->do_upload($mi_imagen)) {//sube el archivo al servidor
+                            //*** ocurrio un error
+                            $data['uploadError'] = $this->upload->display_errors();
+                            $m=$this->upload->display_errors();$o=2;
+                        }else{
+                            $data = array('upload_data' => $this->upload->data());//datos de la imagen precargada
+                            $img_full_path = $config['upload_path'] . $data['upload_data']['file_name'];//imagen que se redimensionará
+                            $imgname=$data['upload_data']['file_name'];//imagen redimensionada
+                            // REDIMENSIONAMOS
+                            $config['image_library'] = 'gd2';//libreria
+                            $config['source_image'] = $img_full_path;///imagen a dimensionar
+                            $config['maintain_ratio'] = TRUE;//manener radio
+                            $config['width'] = 275;//dimensiones
+                            $config['height'] = 250;//dimensiones
+                            $config['new_image'] =  './images/clientes/'.$data['upload_data']['file_name'];//iamgen final
+                            $imgDir=$config['new_image'];
+                            $dirIMG=$config['new_image'];
+                            $this->load->library('image_lib', $config);//se carga la libreria
+                            if (!$this->image_lib->resize()) {//si no se redimensiona
+                                @unlink($img_full_path);//se borra imagen precargada
+                                $m= $this->image_lib->display_errors();$o=2;//En caso de no redimencionrla
+                            }else{//si se redimenciona
+                                @unlink($img_full_path);//se borra imagen precargada
+                                $toInsert= array('foto'=> $imgname);//se crea arreglo a insertar     
+                                $m="imagen guardada";
+                                if ($this->modelo->updateCliente($ref,$toInsert)) {
+                                    $m="La imagen se guardó correctamente.";$o=1;$sw="success";$swh="Completo";
+                                }else{
+                                    @unlink($imgDir);
+                                    $m=getError('insert');
+                                }    
+                            }
+                            $this->image_lib->clear();
+                        }
+                    }else{//si no se recibieron todos los parametros
+                        $m=getError('parametros');
+                    }
+                }else{//si no tiene permisos
+                    $m=getError('acceso');
+                }
+            }else{//si no hay sessio
+                $m=getError('sesion');
+            }
+            echo json_encode(array('o'=>$o,'t'=>$swh,'m'=>$m,'sw'=>$sw));
+        }else{
+            $m=$this->load->view(getError('ajax'));
+        }
+    }
     public function remCliente() {////Eliminar cliente
         if ($this->input->is_ajax_request()) {
             $msg="";//Mensakje final
@@ -1062,7 +1148,7 @@ class Inicio extends CI_Controller {
             }else{//si no hay sessio
                 $m=getError('sesion');
             }
-            echo json_encode(array('error'=>$o,'t'=>$swh,'m'=>$m,'sw'=>$sw,'ref'=>$ref));
+            echo json_encode(array('error'=>$o,'t'=>$swh,'m'=>$m,'sw'=>$sw,'ref'=>$ref,'cve'=>$clave));
         }else{
             $this->load->view(getError('ajax'));
         }
@@ -1270,12 +1356,7 @@ class Inicio extends CI_Controller {
             $m="";$o=2;$con=false;$sw="error";$swh="Error";$ref=0;
             if ($idu) {
                 if ($this->isAdmin($idu)) {
-                    $ref=$this->input->post('ref',true);
-                    $direccion=$this->input->post('direccion',true);
-                    $telefono=$this->input->post('telefono',true);
-                    $movil=$this->input->post('movil',true);
-                    $correo=$this->input->post('correo',true);
-                    $firma=$this->input->post('firma',true);
+                    $refLib=$this->input->post('ref');
                     if($this->validar($ref)){
                         $con=true;
                     }                 
@@ -1418,6 +1499,7 @@ class Inicio extends CI_Controller {
                     $movil=$this->input->post('movil',true);
                     $correo=$this->input->post('correo',true);
                     $firma=$this->input->post('firma',true);
+                    $detalles=$this->input->post('detalles',true);
                     if($this->validar($nombre)){
                         if($this->validar($direccion)){
                             if ($this->validar($telefono)) {
@@ -1432,7 +1514,7 @@ class Inicio extends CI_Controller {
                         }
                     }                 
                     if ($con) {
-                        $data=array('nombre'=>$nombre,'direccion'=>$direccion,'telefono'=>$telefono,'movil'=>$movil,'correo'=>$correo,'firma'=>$firma);
+                        $data=array('nombre'=>$nombre,'direccion'=>$direccion,'telefono'=>$telefono,'movil'=>$movil,'correo'=>$correo,'firma'=>$firma,'detalles'=>$detalles);
                         $ref=$this->modelo->saveBuildData($data);
                         if ($ref) {
                             $m="Datos actualizados correctamente.";$o=false;$sw='success';$swh="Completo";

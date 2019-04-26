@@ -75,12 +75,13 @@ $query_builder = TRUE;
 include '../Modelo/conexion/ConexionBD.php';
 $base=new ConexionBD();
 $datos=$base->getdb_params();
+//'db_user'=> $this->_username,'db_password'=> $this->_password,'db_database'=> $this->_database,'host'
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => 'jose',
-	'password' => '123',
-	'database' => 'sic_db',
+	'hostname' => $datos['host'],
+	'username' => $datos['db_user'],
+	'password' => $datos['db_password'],
+	'database' => $datos['db_database'],
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,

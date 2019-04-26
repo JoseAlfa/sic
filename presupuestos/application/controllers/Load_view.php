@@ -184,7 +184,8 @@ class Load_view extends CI_Controller {
                             $imagen=$val->im;//imagen o logo
                             $detalles=$val->det;///Detalles
                             $tipo=$val->tipo;//Tipos
-                            $marca=$val->marca;//marca
+                            $marca=$this->marca($val->idmarca,true);//marca
+                            //var_dump($val);
                             $print.='<tr class="detail" ur="producto" ref="'.$id.'">
                             <td><a href="javascript:void(0);"><img src="./images/productos/'.$val->im.'" class="img-circle imgfortable"></a></td><td>'.$nombre.'</td><td>'.$clave.'</td><td>'.$marca.'</td><td>'.$tipo.'</td><td>'.$detalles.'</td></tr>';
                         }
@@ -321,14 +322,22 @@ class Load_view extends CI_Controller {
             $this->load->view(getError('ajax'));//se carga la vista de error en peticion de ajax
         }
     }
-    function marca($id) {//datos de un usuario
+    function marca($id,$nombre=false) {//datos de un usuario
         $retornar=array();
-        $consulta=$this->modelo->getMarcas($id);//cosulta 
-        if ($consulta!=null) {
-            foreach ($consulta as $val) {
-                $retornar=array('id'=>$val->id,'nom'=>$val->nom,'cve'=>$val->cv,'det'=>$val->det);
-            }
+        if ($nombre) {
+            $retornar='No espe...';
         }
+        if($id){
+           $consulta=$this->modelo->getMarcas($id);//cosulta 
+            if ($consulta!=null) {
+                foreach ($consulta as $val) {
+                    $retornar=array('id'=>$val->id,'nom'=>$val->nom,'cve'=>$val->cv,'det'=>$val->det);
+                    if($nombre){
+                        $retornar=$val->nom;
+                    }
+                }
+            } 
+        }        
         return $retornar;
     }
     function marcasSelect($ids=''){//devulve estructura de select de marcas
@@ -409,6 +418,32 @@ class Load_view extends CI_Controller {
         }
         return $retornar;
     }
+    ///clientes por json
+    public function clientesJSON(){
+        $print='';
+        if ($this->input->is_ajax_request()) {
+            $consulta=$this->modelo->getClientes();
+            if ($consulta) {
+                foreach ($consulta as $val) {
+                    if($val->show==1 || $val->show=='1'){
+                        $print.='
+                                <li class="col-lg-2 col-md-2 col-sm-2  gallery" >
+                                <div class="templatemo-project-box">
+                                    <img src="presupuestos/images/clientes/'.$val->fot.'" class="img-responsive" alt="gallery" />
+                                    <div class="project-overlay">
+                                        <h5>'.$val->nom.'</h5>
+                                        <hr/>
+                                        <p>'.$val->dir.'</p>
+                                    </div>
+                                </div>
+                            </li>
+                        ';
+                    }
+                }
+            }
+        }
+        echo $print;
+    }
     ///clientes
     public function clientes($offset=0){
         if ($this->input->is_ajax_request()) {//Si es una peticion por ajax
@@ -434,11 +469,11 @@ class Load_view extends CI_Controller {
                             $correo=$val->cor;//correo
                             $telefono=$val->tel;//correo
                             $em=$val->em;///Tipo de usuario
-                            $icon="fa-building";//tipo de usuario en nombre
+                            $icon="business";//tipo de usuario en nombre
                             if (!$em) {//Si no es administrador
-                                $icon="fa-user";//tipo de usuario en nombre
+                                $icon="account_circle";//tipo de usuario en nombre
                             }
-                            $print.='<tr class="detail" ur="cliente" ref="'.$id.'"><td class="icon-t"><i class="fas '.$icon.'"></i></td><td>'.$nombre.'</td><td>'.$correo.'</td><td>'.$telefono.'</td></tr>';
+                            $print.='<tr class="detail" ur="cliente" ref="'.$id.'"><td class=""><i class="material-icons">'.$icon.'</i></td><td>'.$nombre.'</td><td>'.$correo.'</td><td>'.$telefono.'</td></tr>';
                         }
                     }else{
                         $print.='<tr><td colspan="'.count($encabezado).'">No hay resultados</td></tr>';//No hay resultado
@@ -460,7 +495,7 @@ class Load_view extends CI_Controller {
         $consulta=$this->modelo->getClientes($id);
         if ($consulta!=null) {
             foreach ($consulta as $val) {
-                $retornar=array('id'=>$val->id,'nom'=>$val->nom,'cor'=>$val->cor,'tel'=>$val->tel,'dir'=>$val->dir,'em'=>$val->em,'show'=>$val->show,'cp'=>$val->cp,'atn'=>$val->atn);
+                $retornar=array('id'=>$val->id,'nom'=>$val->nom,'cor'=>$val->cor,'tel'=>$val->tel,'dir'=>$val->dir,'em'=>$val->em,'show'=>$val->show,'cp'=>$val->cp,'atn'=>$val->atn,'img'=>$val->fot);
             }
         }
         return $retornar;
@@ -773,9 +808,13 @@ class Load_view extends CI_Controller {
                     $config=$this->pagConfig($q,5);//se carga configuración predeterminada
                     $config['base_url'] = './Load_view/getPresupuestoClose';//url donde estan los datos a paginar
                     $limit=$config['per_page'];///limete de la consulta
-                    $config['total_rows'] = $this->modelo->presupuestos(false,1,$limit,$offset,false,$q,$idp);//total de registros
+                    $config['total_rows'] = $this->modelo->presupuestos(false,1,$limit,$offset,false,$q,$idu);//total de registros
+                    $consulta =$this->modelo->presupuestos(false,1,$limit,$offset,true,$q,$idu);//consulta de valores pertinentes a esta página
+                    if($this->isAdmin($idu,true)){
+                        $config['total_rows'] = $this->modelo->presupuestos(false,1,$limit,$offset,false,$q);
+                        $consulta =$this->modelo->presupuestos(false,1,$limit,$offset,true,$q);
+                    }
                     $this->jquery_pagination->initialize($config);//se inicializa la librebreria de paginación
-                    $consulta =$this->modelo->presupuestos(false,1,$limit,$offset,true,$q,$idp);//consulta de valores pertinentes a esta página
                     $print=$this->busquedaForm('getPresupuestoClose',$q,'hola',true);///formulario de busqueda
                     $canSeeAut=$this->isAdmin($idu,true);
                     $encabezado=array('Clave','Detalles','Cliente','Cerrado');//Encabezado de la tablaa
@@ -874,19 +913,22 @@ class Load_view extends CI_Controller {
         }
     }
     ///////////////////detalles de empresa ////////////////////////////////////
-    private function empresa() {
+    public function empresa($arr=false) {
         $datos=false;
         $this->load->model('Report_Model','modelo1');
         $consulta=$this->modelo1->epresa();
         $uno=true;
         foreach ($consulta as $val) {
             if ($uno) {
-                $datos=array('nombre'=>$val->nombre,'direccion'=>$val->direccion,'telefono'=>$val->telefono,'movil'=>$val->movil,'correo'=>$val->correo,'firma'=>$val->firma);
+                $datos=array('nombre'=>$val->nombre,'direccion'=>$val->direccion,'telefono'=>$val->telefono,'movil'=>$val->movil,'correo'=>$val->correo,'firma'=>$val->firma,'detalles'=>$val->detalles);
             }else{
                 $uno=false;break;
             }
         }
-        return $datos;
+        if($arr){
+            return $datos;
+        }        
+        echo json_encode($datos);
     }
     public function dataPDF(){
         if ($this->input->is_ajax_request()) {
@@ -895,7 +937,7 @@ class Load_view extends CI_Controller {
             $idp=$this->session->userdata('idperson');
             if ($idu) {
                 if ($this->isAdmin($idu,true)) {
-                    $data=$this->empresa();
+                    $data=$this->empresa(true);
                     $this->load->view('ajax/empresa',$data);
                 }else{
                     $print=getError('acceso');

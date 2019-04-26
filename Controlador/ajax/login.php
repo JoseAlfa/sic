@@ -22,14 +22,22 @@ class Login{
     }
     /*Aqui se genera la consulta para buscar el usuario y la contraseña*/
     public function buscar($user,$pass){
-        $sql="SELECT p.nombre nom,p.apellidos ap,p.correo cor,p.telefono tel FROM usuarios u,personas p WHERE u.id_persona=p.id_persona AND u.nombre like('".$user."') AND u.contrasena like(md5('".$pass."'));";
+        $sql="SELECT p.nombre nom,p.apellidos ap,p.correo cor,p.telefono tel,administrador adm FROM usuarios u,personas p WHERE u.id_persona=p.id_persona AND u.nombre like('".$user."') AND u.contrasena like(md5('".$pass."'));";
         $result = $this->conexion->get_data($sql);
         //echo $sql;
         $ret=2;
         if ($result["STATUS"] == "OK" && count($result["DATA"]) > 0) {
-            $ret=1;
-            session_start();
-            $_SESSION['name']=$user;
+            //var_dump($result);
+            foreach ($result["DATA"] as $data) {
+                if ($data['adm']==1|| $data['adm']=='1') {
+                    $ret=1;
+                    session_start();
+                    $_SESSION['name']=$user;
+                }else{
+                    $ret=3;
+                }
+            }           
+            
         }
         return $ret;
     }

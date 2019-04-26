@@ -29,9 +29,9 @@ if(!is_null($_SESSION["name"])){
         <div class="">
             <form class="form-signin" name="logeo" id="logeo" method="post" onsubmit="$.sic.login();return false;">
                 <h3 class="form-signin-heading"><img src="Vista/images/templatemo_logo.png" alt="Logo" width="270"></h3><br>
-                <input type="text" class="form-control" placeholder="Usuario" name="usuario" autofocus id="usuario">
+                <input type="text" class="form-control" placeholder="Usuario" name="usuario" autofocus autocomplete="off" id="usuario">
                 <br>
-                <input type="password" class="form-control" placeholder="Contraseña" name="password" id="password">
+                <input type="password" class="form-control" placeholder="Contraseña" name="password" id="password" autocomplete="off">
                 <input type="submit" class="btn btn-lg btn-success btn-block" value="Iniciar sesión">
                 <br>
                 <a href="index.php" id="back"><span class="glyphicon glyphicon-home"></span>&nbspInicio</a>

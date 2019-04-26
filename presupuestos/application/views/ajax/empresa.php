@@ -50,6 +50,14 @@
 		        </div>
 			</div>
 			<div class="col-xs-12">
+				<div class="form-group form-float">
+		            <div class="form-line">
+		                <input type="text" class="form-control" required id="detallesEmpre" value="<?php echo $detalles; ?>" />
+		                <label class="form-label">Encargado de firmar presupuestos</label>
+		            </div>
+		        </div>
+			</div>
+			<div class="col-xs-12">
 				<button type="submit" id="saveEmmpresaBT" class="btn theme waves-effect" style="float: right;">GUARDAR</button>
 			</div>
 		</form>
@@ -63,7 +71,8 @@
 			telefono:$("#telefonoEmpresaO").val(),
 			movil:$("#movilEmpresaO").val(),
 			correo:$("#correoEmpresaO").val(),
-			firma:$("#firmaEmpresaO").val()
+			firma:$("#firmaEmpresaO").val(),
+			detalles:$("#detallesEmpre").val()
 		};
 		bt=$("#saveEmmpresaBT");
 		bt.attr('disabled', true);
