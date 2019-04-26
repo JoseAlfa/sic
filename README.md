@@ -1,4 +1,4 @@
 # sic
 presupuestos
-#Importante
+# Importante
 Esta version esta imcompleta, falta factorizar algunos componentes
