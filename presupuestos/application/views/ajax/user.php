@@ -63,6 +63,11 @@
                         <option value="1" <?php if(isset($adm)){if($adm==1)echo 'selected';} ?> >Administrador</option>
                     </select>
                 </div>
+                <div class="col-xs-12 col-md-6">
+                    <div class="switch">
+                        <label>Incativo<input type="checkbox" onchange="$.sic.activar();" <?php if(isset($act)){if($act==1)echo 'checked';}else{echo 'checked';} ?> ><span class="lever"></span>Activo</label>
+                    </div>
+                </div>
                 <?php if (!isset($nuevo)) { ?><a class="btn waves-effect bg-red btn-block" onclick="$.sic.deleteUserAcount();">ELIMINAR ESTE USUARIO</a> <?php } ?>
             </div>
         </div>
@@ -75,6 +80,15 @@
 <?php if (isset($nuevo)) {
 ?>   
 <script>
+    $.sic.activo=<?php if(isset($act)){echo $act;}else{echo 1;} ?>;
+    $.sic.activar=function () {
+        if($.sic.activo==1){
+            $.sic.activo=0;
+        }else{
+            $.sic.activo=1;
+        }
+        //console.log($.sic.activo);
+    }
     $.sic.nuevoSave=function () {
         nom=$("#nombre");
         ape=$("#apellido");
@@ -86,7 +100,7 @@
         //if (nom.val()!=undefined&&nom.val().replace(/\s/g,'')=='') {}
         datos={
             url:'./Inicio/accionUsuario',type:'post',
-            data:{nom:nom.val(),ape:ape.val(),cor:cor.val(), tel:tel.val(),usr:usr.val(),pas:pas.val(),adm:adm.val(),act:'nuevo'},
+            data:{nom:nom.val(),ape:ape.val(),cor:cor.val(), tel:tel.val(),usr:usr.val(),pas:pas.val(),adm:adm.val(),activo:$.sic.activo,act:'nuevo'},
             success:function (req) {
                 try{
                     js=$.parseJSON(req);
@@ -109,6 +123,15 @@
 <?php }else{
 ?>    
 <script>
+    $.sic.activo=<?php if(isset($act)){echo $act;}else{echo 0;} ?>;
+    $.sic.activar=function () {
+        if($.sic.activo==1){
+            $.sic.activo=0;
+        }else{
+            $.sic.activo=1;
+        }
+        console.log($.sic.activo);
+    }
     $.sic.nuevoSave=function () {
         ref1=$("#referencia1");
         ref=$("#referencia");
@@ -124,7 +147,7 @@
         if (pas==undefined||pas.replace(/\s/g,'')=='') {pas='0';}
         datos={
             url:'./Inicio/accionUsuario',type:'post',
-            data:{ref1:ref1.val(),ref:ref.val(),nom:nom.val(),ape:ape.val(),cor:cor.val(), tel:tel.val(),usr:usr.val(),pas:pas,adm:adm.val(),act:'update'},
+            data:{ref1:ref1.val(),ref:ref.val(),nom:nom.val(),ape:ape.val(),cor:cor.val(), tel:tel.val(),usr:usr.val(),pas:pas,adm:adm.val(),activo:$.sic.activo,act:'update'},
             success:function (req) {
                 try{
                     js=$.parseJSON(req);

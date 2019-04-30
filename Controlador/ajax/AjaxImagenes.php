@@ -1,7 +1,7 @@
 <?php
 
 function uploadImage($nombreImagen) {
-    $carpetaDestino = "../../Vista/images/proyectos/";
+    $carpetaDestino = "../../presupuestos/images/productos/";
 
     if (validateImage($carpetaDestino)) {
         $origen = $_FILES["archivo"]["tmp_name"];
@@ -29,3 +29,12 @@ function validateImage($carpetaDestino) {
 
     return FALSE;
 }
+function getRandomString($length = 10) {
+        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }

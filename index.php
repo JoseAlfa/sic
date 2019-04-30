@@ -156,17 +156,17 @@
                                     <span class="blog_header">Valores</span><br/>                                    
                                     <div class="clearfix"> </div>
                                     <p class="blog_text">
-                                        •	Ética / Moral
-                                        Respeto, sin excepciones, a la humanidad, al medio ambiente y a la naturaleza.
-                                        •	Honestidad
-                                        Trato sincero y honesto con los demás.
-                                        •	Calidad / Seguridad
-                                        Equilibrio óptimo entre la humanidad y el medio ambiente, el producto y su utilización. 
-                                        •	Responsabilidad
-                                        Responsables con el medio ambiente y con la satisfacción de nuestros empleados y clientes. 
-                                        •	Humanidad
-                                        Compromiso social de la empresa. 
-                                        •	Excelencia
+                                        <b>•	Ética / Moral Respeto</b>
+                                        , sin excepciones, a la humanidad, al medio ambiente y a la naturaleza. <br>
+                                        <b>•	Honestidad</b>
+                                        Trato sincero y honesto con los demás. <br>
+                                        <b>•	Calidad / Seguridad</b>
+                                        Equilibrio óptimo entre la humanidad y el medio ambiente, el producto y su utilización. <br>
+                                        <b>•	Responsabilidad</b>
+                                        Responsables con el medio ambiente y con la satisfacción de nuestros empleados y clientes. <br>
+                                        <b>•	Humanidad</b>
+                                        Compromiso social de la empresa. <br>
+                                        <b>•	Excelencia</b>
                                         Ser una empresa sobresaliente mediante el esfuerzo día a día.
 
                                     </p>
@@ -253,8 +253,8 @@
                         </div>
                     </div>
                     <div class="col-md-4 contact_right">                        
-                        <p><img src="Vista/images/location.png" alt="icon 1" /> <span id="direccionEmp"></span></p>
-                        <p><img src="Vista/images/phone1.png"  alt="icon 2" /> <span id="telefonoEmp"></span></p>
+                        <p><img src="Vista/images/location.png" alt="icon 1" /> <span id="direccionEmp">Andador Antono Soler #114 Col Infonavit Atasta C.P. 86100. Villahermosa, Centro, Tabasco.</span></p>
+                        <p><img src="Vista/images/phone1.png"  alt="icon 2" /> <span id="telefonoEmp">(993) 4123782</span></p>
                         <p>
                             <img src="Vista/images/globe.png" alt="icon 3" />
                             <a class="link_orange" href="#">

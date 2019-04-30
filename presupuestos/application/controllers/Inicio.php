@@ -51,10 +51,14 @@ class Inicio extends CI_Controller {
                 $consulta= $this->modelo->login($usr,$pas);//consuta en el modelo, envia usuario y contrseña como parametros
                 if ($consulta!=NULL) {//si la consulta recibe valores diferente de null
                     foreach ($consulta as $valor) {//recorridod de la consulta
-                        $mensaje="Bienvenido ".$valor->nom;//Mensaje final
-                        $opcion=1;//Opcion que determina el mensaje
-                        $sesion=array('iduser'=>$valor->idu,'idperson'=>$valor->idp);//datos que se guarda en la sesión
-                        $this->session->set_userdata($sesion);//asigna valres de la sesion
+                        if($valor->act==1 || $valor->act== '1'){
+                            $mensaje="Bienvenido ".$valor->nom;//Mensaje final
+                            $opcion=1;//Opcion que determina el mensaje
+                            $sesion=array('iduser'=>$valor->idu,'idperson'=>$valor->idp);//datos que se guarda en la sesión
+                            $this->session->set_userdata($sesion);//asigna valres de la sesion
+                        }else{
+                            $mensaje='Acceso denegado';
+                        }                        
                     }
                 }else{
                     $mensaje=getError('contrasena');//mensaje final
@@ -293,6 +297,7 @@ class Inicio extends CI_Controller {
                         $usr=$this->input->post('usr',true);//usuario
                         $pas=$this->input->post('pas',true);//conraseña
                         $adm=$this->input->post('adm',true);//administrador
+                        $activo=$this->input->post('activo',true);
                         $iduser=$this->input->post('ref',true);//id del usuario a actualizar, en caso de requerirlo
                         $idpers=$this->input->post('ref1',true);//id de la persona a actualizar, en caso de requerirlo
                         if ($this->validar($nom)) {//si nombre es valido
@@ -313,8 +318,8 @@ class Inicio extends CI_Controller {
                             }
                         }
                         if ($valido) {//si la petición es válida
-                            $datosPersona=array('nombre'=>$nom,'apellidos'=>$ape,'correo'=>$cor,'telefono'=>$cor);//datos de persona a insertar
-                            $datosUser=array('nombre'=>$usr,'administrador'=>$adm);
+                            $datosPersona=array('nombre'=>$nom,'apellidos'=>$ape,'correo'=>$cor,'telefono'=>$tel);//datos de persona a insertar
+                            $datosUser=array('nombre'=>$usr,'administrador'=>$adm,'activo'=>$activo);
                             //datos de usuario ainsertar
                             if ($act=='nuevo') {//si se guardara un nuevo usuario
                                 $datosUser['contrasena']=$pas;//se incuye la contraseña
@@ -1356,7 +1361,7 @@ class Inicio extends CI_Controller {
             $m="";$o=2;$con=false;$sw="error";$swh="Error";$ref=0;
             if ($idu) {
                 if ($this->isAdmin($idu)) {
-                    $refLib=$this->input->post('ref');
+                    $ref=$this->input->post('ref');
                     if($this->validar($ref)){
                         $con=true;
                     }                 
@@ -1516,6 +1521,49 @@ class Inicio extends CI_Controller {
                     if ($con) {
                         $data=array('nombre'=>$nombre,'direccion'=>$direccion,'telefono'=>$telefono,'movil'=>$movil,'correo'=>$correo,'firma'=>$firma,'detalles'=>$detalles);
                         $ref=$this->modelo->saveBuildData($data);
+                        if ($ref) {
+                            $m="Datos actualizados correctamente.";$o=false;$sw='success';$swh="Completo";
+                        }else{
+                            $m=getError('insert');
+                        }
+                    }else{
+                        $m=getError('parametros');
+                    }
+                }else{//si no tiene permisos
+                    $m=getError('acceso');
+                }
+            }else{//si no hay sessio
+                $m=getError('sesion');
+            }
+            echo json_encode(array('error'=>$o,'t'=>$swh,'m'=>$m,'sw'=>$sw));
+        }else{
+            $this->load->view(getError('ajax'));
+        }
+    }
+    public function saveCEOData() {
+        if ($this->input->is_ajax_request()) {
+            $idu=$this->session->userdata('iduser');
+            $m="";$o=true;$con=false;$sw="red";$swh="Error";$ref=0;
+            if ($idu) {
+                if ($this->isAdmin($idu,true)) {
+                    $nombre=$this->input->post('nombre',true);
+                    $telefono=$this->input->post('telefono',true);
+                    $apellidos=$this->input->post('apellidos',true);
+                    $correo=$this->input->post('correo',true);
+                    $titulo=$this->input->post('titulo',true);
+                    $ref=$this->input->post('ref',true);
+                    if($this->validar($nombre)){
+                        if($this->validar($apellidos)){
+                            if ($this->validar($telefono)) {
+                                    if ($this->validar($correo)) {
+                                        $con=true;///datos completos                                       
+                                    }
+                            }
+                        }
+                    }                 
+                    if ($con) {
+                        $data=array('nombre'=>$nombre,'apellidos'=>$apellidos,'telefono'=>$telefono,'titulo'=>$titulo,'correo'=>$correo);
+                        $ref=$this->modelo->updatePersona($data,$ref);
                         if ($ref) {
                             $m="Datos actualizados correctamente.";$o=false;$sw='success';$swh="Completo";
                         }else{

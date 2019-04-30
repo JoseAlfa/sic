@@ -21,17 +21,18 @@ class General_model extends CI_Model {
         return $res->result();
     }
     public function login($usr,$pas) {//Generador de consulta para la validaión por medi de un usuarioy contraseña
-        $this->db->select('p.nombre nom,p.apellidos ap,p.correo cor,p.telefono tel,p.id_persona idp,u.id_usuario idu,u.color col');
+        $this->db->select('p.nombre nom,p.apellidos ap,p.correo cor,p.telefono tel,p.id_persona idp,u.id_usuario idu,u.color col,u.activo act');
         $this->db->from('personas p');
         $this->db->join('usuarios u','u.id_persona=p.id_persona');
         $this->db->where('u.nombre',$usr);
 	    $this->db->where('u.contrasena',$pas);
+        //$this->db->where('u.activo',1);
         $res=$this->db->get();
         #echo $this->db->last_query();
 	    return $res->result();
     }
     public function userdata($idpersona){///Consulta deos dato personales a base de un id
-        $this->db->select('p.nombre nom,p.apellidos ap,p.correo cor,p.telefono tel,p.id_persona idp');
+        $this->db->select('p.nombre nom,p.apellidos ap,p.correo cor,p.telefono tel,p.id_persona idp,titulo tit');
         $this->db->from('personas p');
         $this->db->where('p.id_persona',$idpersona);
         $res=$this->db->get();
@@ -47,6 +48,10 @@ class General_model extends CI_Model {
     public function updateUsuario($datos,$idu){//actualizacion de la tabla de usuario
         $this->db->where('id_usuario',$idu);
         return $this->db->update('usuarios',$datos);
+    }
+    public function updatePersona($datos,$ref) {
+        $this->db->where('id_persona',$ref);
+        return $this->db->update('personas',$datos);
     }
     public function verificarContrasena($contrasena,$idu){//consulta lacontraseña de un id de usuario
         $this->db->select('u.nombre nom,u.color col,u.id_persona idp');
@@ -230,7 +235,7 @@ class General_model extends CI_Model {
     /*************Usuarios______________>**/
     public function getUsuarios($idsel,$limit=0,$offset=0,$pag=true,$q='',$idses=0)  {
         $return=null;
-        $this->db->select("p.id_persona idp,u.id_usuario idu,p.nombre nom,p.apellidos ap,p.correo cor,p.telefono tel,u.nombre usr,u.administrador adm");
+        $this->db->select("p.id_persona idp,u.id_usuario idu,p.nombre nom,p.apellidos ap,p.correo cor,p.telefono tel,u.nombre usr,u.administrador adm,u.activo act");
         $this->db->from('personas p');
         $this->db->join('usuarios u','u.id_persona=p.id_persona');
         $this->db->group_start();
@@ -245,6 +250,7 @@ class General_model extends CI_Model {
             $return= $res->result();
         }else{
             if ($pag) {
+                $this->db->where('p.id_persona !=',1);
                 $this->db->order_by('p.id_persona asc');
                 $this->db->limit($limit, $offset);
                 $res=$this->db->get();

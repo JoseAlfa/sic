@@ -14,33 +14,33 @@ class DAOServicios {
     }
 
     public function insertar(Servicio $servicio) {
-        $sql = "INSERT INTO servicios(nombre, descripcion, id_imagen) VALUES("
+        $sql = "INSERT INTO productos(nombre, detalles, imagen,id_tipo) VALUES("
                 . "'" . $servicio->getNombre() . "',"
-                . "'" . $servicio->getDescripcion() . "',"
-                . $servicio->getImagen() . ")";
+                . "'" . $servicio->getDescripcion() . "','"
+                . $servicio->getImagen() . "',1)";
         return $this->setUpdate($sql);
     }
 
     public function actualizar(Servicio $servicio) {
-        $sql = "UPDATE servicios SET "
+        $sql = "UPDATE productos SET "
                 . "nombre = '" . $servicio->getNombre() . "',"
-                . "descripcion = '" . $servicio->getDescripcion() . "',"
-                . "id_imagen = " . $servicio->getImagen()
-                . " WHERE id_servicio = " . $servicio->getIdServicio();
+                . "detalles = '" . $servicio->getDescripcion() . "',"
+                . "imagen = '" . $servicio->getImagen()."'"
+                . " WHERE id_producto = " . $servicio->getIdServicio();
         return $this->setUpdate($sql);
     }
 
     public function eliminar($id) {
-        $sql = "DELETE FROM servicios WHERE id_servicio = " . $id;
+        $sql = "DELETE FROM productos WHERE id_producto = " . $id;
         return $this->setUpdate($sql);
     }
 
     private function createObject($data) {
         $servicio = new Servicio();
-        $servicio->setIdServicio($data["id_servicio"]);
+        $servicio->setIdServicio($data["id_producto"]);
         $servicio->setNombre($data["nombre"]);
-        $servicio->setDescripcion($data["descripcion"]);
-        $servicio->setImagen($data["id_imagen"]);
+        $servicio->setDescripcion($data["detalles"]);
+        $servicio->setImagen($data["imagen"]);
         return $servicio;
     }
 
@@ -72,12 +72,12 @@ class DAOServicios {
     }
 
     public function consultarPorID($id) {
-        $sql = "SELECT * FROM servicios WHERE id_servicio = " . $id;
+        $sql = "SELECT * FROM productos WHERE id_producto = " . $id;
         return $this->getSingleData($sql);
     }
 
     public function consultarTodos() {
-        $sql = "SELECT * FROM servicios ORDER BY nombre";
+        $sql = "SELECT * FROM productos where id_tipo=1 ORDER BY nombre";
         return $this->getArrayData($sql);
     }
 

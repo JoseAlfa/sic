@@ -6,6 +6,7 @@ include_once '../../Modelo/clases/Imagen.php';
 include_once '../../Modelo/dao/DAOImagenes.php';
 include_once './AjaxImagenes.php';
 
+
 $action = filter_input(INPUT_POST, 'action', FILTER_SANITIZE_SPECIAL_CHARS);
 $daoServicios = new DAOServicios();
 $daoImagenes = new DAOImagenes();
@@ -14,17 +15,17 @@ if (strcmp($action, "insert") === 0) {
     $nombre = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $descripcion = filter_input(INPUT_POST, 'descripcion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $nombreImagen = filter_input(INPUT_POST, 'imagen', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    //
+    $nombreImagen = 'PRO_'.getRandomString(10).substr($nombreImagen, strlen($nombreImagen)-5,strlen($nombreImagen));
     $status = "ERROR";
-    $imagen = new Imagen();
-    $imagen->setNombre($nombreImagen);
+    //$imagen = new Imagen();
+    //$imagen->setNombre($nombreImagen);
 
     if (uploadImage($nombreImagen)) {
-        if ($daoImagenes->insertar($imagen)) {
+        if (true) {
             $servicio = new Servicio();
             $servicio->setNombre($nombre);
             $servicio->setDescripcion($descripcion);
-            $servicio->setImagen(ConexionBD::get_last_id());
+            $servicio->setImagen($nombreImagen);
 
             if ($daoServicios->insertar($servicio)) {
                 $status = "OK";
@@ -60,6 +61,7 @@ if (strcmp($action, "insert") === 0) {
     $nombre = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $descripcion = filter_input(INPUT_POST, 'descripcion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $nombreImagen = filter_input(INPUT_POST, 'imagen', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
     //
     $status = 0;
     //
@@ -68,13 +70,14 @@ if (strcmp($action, "insert") === 0) {
     $servicio->setDescripcion($descripcion);
 
     if (strlen($nombreImagen) > 0) {
-        $imagen = new Imagen();
-        $imagen->setNombre($nombreImagen);
+        //$imagen = new Imagen();
+        $nombreImagen = 'PRO_'.getRandomString(10).substr($nombreImagen, strlen($nombreImagen)-5,strlen($nombreImagen));
+        //$imagen->setNombre($nombreImagen);
 
         if (uploadImage($nombreImagen)) {
-            if ($daoImagenes->insertar($imagen)) {
+            if (true) {
                 $status = 1;
-                $servicio->setImagen(ConexionBD::get_last_id());
+                $servicio->setImagen($nombreImagen);
             }
         }
     } else {
@@ -90,7 +93,16 @@ if (strcmp($action, "insert") === 0) {
     echo $status == 3 ? 'OK' : 'ERROR';
 } else if (strcmp($action, "delete") === 0) {
     $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
-    echo $daoServicios->eliminar($id) ? "OK" : "ERROR";
+    $data= serviceData($daoServicios->consultarPorID($id));
+    $img=$data['IMAGEN'];
+    if ($daoServicios->eliminar($id)) {
+        $img='../../presupuestos/images/productos/'.$img;
+        //echo $img;
+        @unlink($img);
+        echo 'OK';
+    }else{
+        echo "ERROR";
+    }    
 } else if (strcmp($action, "show") === 0) {
     $servicios = $daoServicios->consultarTodos();
     $response = "ERROR";
@@ -108,8 +120,8 @@ function showData($servicios) {
     $count = 1;
 
     foreach ($servicios as $servicio) {
-        $daoImagen = new DAOImagenes();
-        $imagen = $daoImagen->consultarPorID($servicio->getImagen());
+        //$daoImagen = new DAOImagenes();
+       // $imagen = $daoImagen->consultarPorID($servicio->getImagen());
         ?>
         <tr>
             <td class="center"><?php echo $count++; ?></td>
@@ -118,7 +130,7 @@ function showData($servicios) {
             <td align="left">
                 <button class="btn btn-xs btn-info img-tooltip">
                     <span>Ver</span>
-                    <img src="images/proyectos/<?php echo $imagen->getNombre(); ?>" alt="<?php echo $servicio->getNombre(); ?>"/>
+                    <img src="../presupuestos/images/productos/<?php echo $servicio->getImagen(); ?>" alt="<?php echo $servicio->getNombre(); ?>"/>
                 </button>
                 <button class="btn btn-xs btn-info" onclick="load(<?php echo $servicio->getIdServicio(); ?>)">
                     <span>Editar</span>
@@ -134,13 +146,13 @@ function showData($servicios) {
 
 function showItems($servicios) {
     foreach ($servicios as $proyecto) {
-        $daoImagen = new DAOImagenes();
-        $imagen = $daoImagen->consultarPorID($proyecto->getImagen());
+        //$daoImagen = new DAOImagenes();
+        //$imagen = $daoImagen->consultarPorID($proyecto->getImagen());
         ?>
         <div class="col-md-4">
             <div class="templatemo-service-item">
                 <div>
-                    <img src="Vista/images/proyectos/<?php echo $imagen->getNombre(); ?>" alt="icon" />
+                    <img src="presupuestos/images/productos/<?php echo $proyecto->getImagen(); ?>" alt="icon" />
                     <span class="templatemo-service-item-header"><?php echo $proyecto->getNombre(); ?></span>
                 </div>
                 <p><?php echo $proyecto->getDescripcion(); ?></p>
@@ -150,4 +162,14 @@ function showItems($servicios) {
         </div> 
         <?php
     }
+}
+
+function serviceData($servicio){
+    $response = array(
+        'STATUS' => $servicio->getIdServicio() > 0 ? "OK" : "ERROR",
+        'ID' => $servicio->getIdServicio(),
+        'NOMBRE' => $servicio->getNombre(),
+        'DESCRIPCION' => $servicio->getDescripcion(),
+        'IMAGEN'=> $servicio->getImagen()
+    );
 }

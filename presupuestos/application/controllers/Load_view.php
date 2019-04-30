@@ -413,7 +413,7 @@ class Load_view extends CI_Controller {
         $consulta=$this->modelo->getUsuarios($id);
         if ($consulta!=null) {
             foreach ($consulta as $val) {
-                $retornar=array('idu'=>$val->idu,'idp'=>$val->idp,'nom'=>$val->nom,'ape'=>$val->ap,'cor'=>$val->cor,'tel'=>$val->tel,'usr'=>$val->usr,'adm'=>$val->adm,'pas'=>'bien');
+                $retornar=array('idu'=>$val->idu,'idp'=>$val->idp,'nom'=>$val->nom,'ape'=>$val->ap,'cor'=>$val->cor,'tel'=>$val->tel,'usr'=>$val->usr,'adm'=>$val->adm,'pas'=>'bien','act'=>$val->act);
             }
         }
         return $retornar;
@@ -920,7 +920,7 @@ class Load_view extends CI_Controller {
         $uno=true;
         foreach ($consulta as $val) {
             if ($uno) {
-                $datos=array('nombre'=>$val->nombre,'direccion'=>$val->direccion,'telefono'=>$val->telefono,'movil'=>$val->movil,'correo'=>$val->correo,'firma'=>$val->firma,'detalles'=>$val->detalles);
+                $datos=array('nombre'=>$val->nombre,'direccion'=>$val->direccion,'telefono'=>$val->telefono,'movil'=>$val->movil,'correo'=>$val->correo,'firma'=>$val->firma,'detalles'=>$val->detalles,'ceo'=>$val->ceo);
             }else{
                 $uno=false;break;
             }
@@ -930,6 +930,14 @@ class Load_view extends CI_Controller {
         }        
         echo json_encode($datos);
     }
+    private function ceo($id){
+        $ret=array();
+        $ceo=$this->modelo->userdata($id);
+        foreach ($ceo as $valor) {
+            $ret=array('nombre'=>$valor->nom,'correo'=>$valor->cor,'apellidos'=>$valor->ap,'telefono'=>$valor->tel,'titulo'=>$valor->tit,'ref'=>$valor->idp);//datos a retornar
+        }
+        return $ret;
+    }
     public function dataPDF(){
         if ($this->input->is_ajax_request()) {
             $print="";
@@ -938,6 +946,8 @@ class Load_view extends CI_Controller {
             if ($idu) {
                 if ($this->isAdmin($idu,true)) {
                     $data=$this->empresa(true);
+                    //var_dump($data);
+                    $data['ceo']=$this->ceo($data['ceo']);
                     $this->load->view('ajax/empresa',$data);
                 }else{
                     $print=getError('acceso');

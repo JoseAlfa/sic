@@ -65,7 +65,7 @@ class Report extends CI_Controller {
         $uno=true;
         foreach ($consulta as $val) {
             if ($uno) {
-                $datos=array('nombre'=>$val->nombre,'direccion'=>$val->direccion,'telefono'=>$val->telefono,'movil'=>$val->movil,'correo'=>$val->correo,'firma'=>$val->firma);
+                $datos=array('nombre'=>$val->nombre,'direccion'=>$val->direccion,'telefono'=>$val->telefono,'movil'=>$val->movil,'correo'=>$val->correo,'firma'=>$val->firma,'detalles'=>$val->detalles);
             }else{
                 $uno=false;break;
             }
@@ -253,13 +253,27 @@ class Report extends CI_Controller {
             $temp=intval($can);
             if($can==$temp){$can.='.00';}
             $sub=$val->can*$val->pre;
+            $detPre=$val->det;
+            if ($detPre=='Sin detalles') {
+                $detPre=$val->detP;
+                if(!$detPre){
+                    $detPre=$val->det;
+                }
+            }else{
+                $detPre=$val->detP;
+                if($detPre){
+                    $detPre=$val->det.' ('.$val->detP.')';
+                }else{
+                    $detPre=$val->detP;
+                }
+            }
             $total+=$sub;
             $temp=intval($sub);
             if($sub==$temp){$sub.='.00';}
             $tbl .='
             <tr>
                 <td style="border:1px solid '.$lineColor.';text-align:center;width:107px;">'.$val->pro.'</td>
-                <td style="border:1px solid '.$lineColor.';width:230px;">'.$val->det.'('.$val->det.')</td>
+                <td style="border:1px solid '.$lineColor.';width:230px;">'.$detPre.'</td>
                 <td style="border:1px solid '.$lineColor.';text-align:center;width:107px;">'.$val->can.'</td>
                 <td style="border:1px solid '.$lineColor.';text-align:right; width:97px;">$ '.$can.'</td>
                 <td style="border:1px solid '.$lineColor.';text-align:right; width:97px;">$ '.$sub.'</td>
@@ -353,7 +367,7 @@ class Report extends CI_Controller {
             exit();
         }
         $this->load->library('Pdf');
-        $pdf = new Pdf('P', 'mm', 'A4', true, 'UTF-8', false);
+        $pdf = new PDFOOT('P', 'mm', 'A4', true, 'UTF-8', false);
         $pdf->setPrintHeader(false);
         // set document information
         $pdf->SetCreator(PDF_CREATOR);
@@ -414,11 +428,82 @@ class Report extends CI_Controller {
 
         </table><br>
         ';
-
         $pdf->writeHTML($tbl, true, false, false, false, '');
 
 
+        $consulta=$this->modelo->ceo(1);
+        $ceo=array('nombre'=>'','correo'=>'');
+        foreach ($consulta as $val) {
+            $ceo['nombre']=$val->nombre.' '.$val->apellidos;
+            $ceo['correo']=$val->correo;
+        }
+        $tbl = $style.'<br><br>
+        <table cellspacing="0" cellpadding="3" border="0">
+            <tr>
+                <td style="width:30px;"></td>
+                <td style="width:60px;"><b>CEO:</b></td>
+                <td>'.$ceo['nombre'].'</td>
+            </tr>
+            <tr>
+                <td style="width:30px;"></td>
+                <td style="width:60px;"><b>Correo:</b></td>
+                <td>'.$ceo['correo'].'</td>
+            </tr>
+            <tr>
+                <td style="width:auto;"><p>'.$empresa['detalles'].'</p></td>
+            </tr>
+        </table><br>';
+        $pdf->writeHTML($tbl, true, false, false, false, '');
+        $border='border:1px solid #3d7e9a;';
+        $back='background-color: #e4f0f5';
+        $padding='padding-left:5px;';
+        /**Lita de Servicios**/
+        $tbl = '<br>
+        <table cellpadding="4" border="0">
+            <tr>
+                <td colspan="2" style="text-align:center;'.$border.$back.'"><b>Servicios que ofrecemos</b></td>
+            </tr>
+            <tr>
+                <td style="width:250px;'.$border.$padding.'"><b>Nombre</b></td>
+                <td style="width:auto;'.$border.$padding.'"><b>Detalles</b></td>
+            </tr>';
+        $consulta=$this->modelo->productosShow();
+        if ($consulta) {
+            foreach ($consulta as $val) {
+                $tbl.='<tr>
+                    <td style="width:250px;'.$border.$padding.'">'.$val->nombre.'</td>
+                    <td style="width:auto;'.$border.$padding.'">'.$val->detalles.'</td>
+                </tr>';
+            }            
+        }
+        $tbl.='</table><br>';
+        $pdf->writeHTML($tbl, true, false, false, false, '');
 
+        /**LISTA DE CLIENTES**/
+        $tbl = '<br><br>
+        <table cellpadding="4" border="0">
+            <tr>
+                <td colspan="2" style="text-align:center;'.$border.$back.'"><b>Nuestros clientes</b></td>
+            </tr>
+            <tr>
+                <td style="width:250px;'.$border.$padding.'"><b>Nombre</b></td>
+                <td style="width:auto;'.$border.$padding.'"><b>Dirección</b></td>
+            </tr>';
+        $consulta=$this->modelo->clientes();
+        if ($consulta) {
+            foreach ($consulta as $val) {
+                $cl=$val->nombre;
+                if ($val->empresa==1 || $val->empresa == '1') {
+                    $cl='Empresa '.$cl;
+                }
+                $tbl.='<tr>
+                    <td style="width:250px;'.$border.$padding.'">'.$cl.'</td>
+                    <td style="width:auto;'.$border.$padding.'">'.$val->direccion.'</td>
+                </tr>';
+            }            
+        }
+        $tbl.='</table><br>';
+        $pdf->writeHTML($tbl, true, false, false, false, '');
         //Close and output PDF document
         $pdf->Output('curriculum_sic.pdf', 'I');
     }

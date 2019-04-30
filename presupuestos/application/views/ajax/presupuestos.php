@@ -240,7 +240,10 @@
                             js=$.parseJSON(data);
                             swal(js.t, js.m, js.sw);
                             if (js.o==1) {
-                                $.sic.load('getPresupuestoClose','Presupuestos cerrados');
+                                <?php if (isset($plantilla)) { ?>
+                                    $("#nuevo_modal").modal('hide');
+                                <?php } ?>
+                                    $.sic.load('getPresupuestos','Recientes');                            
                             }
                         }catch(e){
                             swal('Error', $.sic.mjserr, 'error');

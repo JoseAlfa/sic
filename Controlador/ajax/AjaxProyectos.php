@@ -1,4 +1,6 @@
 <?php
+//ini_set('display_errors', 1);
+//error_reporting(E_ALL);
 include_once '../../Modelo/conexion/ConexionBD.php';
 include_once '../../Modelo/clases/Proyecto.php';
 include_once '../../Modelo/dao/DAOProyectos.php';

@@ -29,7 +29,7 @@ class Report_Model extends CI_Model {
 	}
 	public function productos($id_pre){
 		$return=null;
-        $this->db->select("pr.nombre pro,pr.detalles det,pr.medida med,pp.precio pre,pp.cantidad can,m.nombre mar");
+        $this->db->select("pr.nombre pro,pr.detalles det,pr.medida med,pp.precio pre,pp.cantidad can,m.nombre mar,pp.detalles detP");
         $this->db->from('presupuestos p');
         $this->db->join('presupuesto_productos pp','p.id_presupuesto=pp.id_presupuesto');
         $this->db->join('productos pr','pp.id_producto=pr.id_producto');
@@ -48,4 +48,20 @@ class Report_Model extends CI_Model {
         $return= $res->result();
         return $return;
 	}
+    public function ceo($id) {
+        $this->db->where('id_persona',$id);
+        $res=$this->db->get('personas');
+        return $res->result();
+    }
+    public function productosShow($tipo=1)   {
+        $this->db->where('id_tipo',$tipo);
+        $res=$this->db->get('productos');
+        //echo $this->db->last_query();
+        return $res->result();
+    }
+    public function clientes($mostrar=1) {
+        $this->db->where('mostrar',$mostrar);
+        $res=$this->db->get('clientes');
+        return $res->result();
+    }
 }
