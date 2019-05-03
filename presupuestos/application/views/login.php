@@ -46,7 +46,7 @@ inicio de sesión SIC todos los derechos reservados 2019.
         <!-- #END# Page Loader -->
         <div class="login-box">
             <div class="logo">
-                <img src="./img/logos/logo.png" alt="">
+                <img src="./img/logos/logo.png" alt="" style="max-height: 130px;">
             </div>
             <div class="card" style="margin-bottom: 5px;">
                 <div class="body">

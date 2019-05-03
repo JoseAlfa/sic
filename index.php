@@ -16,7 +16,11 @@
         <script src="Vista/js/jquery.min.js" type="text/javascript"></script>
         <script src="Controlador/js/ajax.js" type="text/javascript"></script>
         <script src="Controlador/js/userUI.js" type="text/javascript"></script>
-
+        <style>
+            .carousel-inner .item img{
+                max-width: 600px;
+            }
+        </style>
     </head>
     <body>
         <div class="templatemo-top-bar" id="templatemo-top">
@@ -24,11 +28,11 @@
                 <div class="subheader">
                     <div id="phone" class="pull-left">
                         <img src="Vista/images/phone.png" alt="phone"/>
-                        +52 993 412 3782
+                        <span id="phone_nav">+52 993 412 3782</span>                        
                     </div>
                     <div id="email" class="pull-right">
                         <img src="Vista/images/email.png" alt="email"/>
-                        soluciones_integral@hotmail.com
+                        <span id="email_nav">soluciones_integral@hotmail.com</span>                        
                     </div>
                 </div>
             </div>
@@ -45,7 +49,7 @@
                                 <span class="icon-bar"></span>
                                 <span class="icon-bar"></span>
                             </button>
-                            <a href="#templatemo_395_urbanic" class="navbar-brand"><img src="Vista/images/templatemo_logo.png" alt="Urbanic - free HTML5 website template" title="Urbanic HTML5 Template" /></a>
+                            <a href="#templatemo_395_urbanic" class="navbar-brand"><img src="Vista/images/templatemo_logo.png" alt="Urbanic - free HTML5 website template" title="Sic" style="    max-height: 100px;" /></a>
                         </div>
                         <div class="navbar-collapse collapse" id="templatemo-nav-bar">
                             <ul class="nav navbar-nav navbar-right" style="margin-top: 37px;">
@@ -63,13 +67,64 @@
             </div> <!-- /container -->
         </div>
         <div class="templatemo-welcome" id="templatemo-welcome">
+            
+
             <div class="container">
+                <!--Carrusel experimental---->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div id="carousel-example-generic_2" class="carousel slide" data-ride="carousel">
+                                    <!-- Indicators -->
+                                    <ol class="carousel-indicators">
+                                        <li data-target="#carousel-example-generic_2" data-slide-to="0" class="active"></li>
+                                        <li data-target="#carousel-example-generic_2" data-slide-to="1"></li>
+                                        <li data-target="#carousel-example-generic_2" data-slide-to="2"></li>
+                                    </ol>
+                                    <!-- Wrapper for slides -->
+                                    <div class="carousel-inner" role="listbox">
+                                        <div class="item active">
+                                            <img src="Vista/images/full-gallery-image-8-t.jpg" />
+                                            <div class="carousel-caption">
+                                                <h3>Instalación de cámaras</h3>
+                                                <p>Los mejores equipos en cámaras de seguridad.</p>
+                                            </div>
+                                        </div>
+                                        <div class="item">
+                                            <img src="Vista/images/gallery-image-1.jpg" />
+                                            <div class="carousel-caption">
+                                                <h3>Soluciones en cableado estructurado</h3>
+                                                <p>Cableado estructurado acorde a las necesidades del cliente.</p>
+                                            </div>
+                                        </div>
+                                        <div class="item">
+                                            <img src="Vista/images/templatemo_carousel_bg3.jpg" />
+                                            <div class="carousel-caption">
+                                                <h3>Servicios integrales</h3>
+                                                <p>Ejecución de pequeños a grandes proyectos</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Controls -->
+                                    <a class="left carousel-control" href="#carousel-example-generic_2" role="button" data-slide="prev">
+                                        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
+                                    <a class="right carousel-control" href="#carousel-example-generic_2" role="button" data-slide="next">
+                                        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                                        <span class="sr-only">Next</span>
+                                    </a>
+                                </div>
+                    </div>
+                </div>
+        
+            
                 <div class="templatemo-slogan text-center">
                     <span class="txt_darkgrey">Bienvenido a </span><span class="txt_orange">Soluciones Integrales & Telecomunicaciones</span>
-                    <p class="txt_slogan"><i>Slogan de la empresa</i></p>
+                    
                 </div>
             </div>
         </div>
+        <!--Termina Carrusel experimental---->
         <!------------------------------>
         <!---------- NOSOTROS ---------->
         <!------------------------------>

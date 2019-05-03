@@ -171,6 +171,8 @@ function contacto() {
                 $("#empresaName").html(js.nombre);
                 $("#telefonoEmp").html(js.telefono);
                 $("#direccionEmp").html(js.direccion);
+                $("#email_nav").html(js.correo);
+                $("#phone_nav").html(js.telefono);
             }catch(e){console.log(e);}
         },
         error: function (xhr, req, err) {

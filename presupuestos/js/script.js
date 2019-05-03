@@ -240,10 +240,16 @@ $(document).ready(function() {
 	    	datos={
 				url:'Inicio/salir',
 				success:function (data) {
-					swal("Hecho", "La sesión fue cerrada", "success");
+					swal({
+				        title: "Hecho",
+				        text: "La sesión fue cerrada",
+				        type:'success',
+				        timer: 1100,
+				        showConfirmButton: false
+				    });
 					setTimeout(function () {
 				        $.sic.rel();
-				    }, 1500);
+				    }, 1000);
 				},
 				error:function (qw,er,th) {
 					swal("Ha ocurrido un error", "Porfavor intente más tarde", "error");

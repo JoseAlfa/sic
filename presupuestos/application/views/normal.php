@@ -95,7 +95,7 @@ and open the template in the editor.
             <aside id="leftsidebar" class="sidebar">
                 <!-- User Info -->
                 <div class="user-info">
-                    <div><img src="./img/logos/logo.png" alt="" class="img-responsive"></div>
+                    <div><img src="./img/logos/logo.png" style="height: 130px;" alt="" class="img-responsive"></div>
                 </div>
                 <!-- #User Info -->
                 <!-- Menu -->

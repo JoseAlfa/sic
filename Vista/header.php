@@ -38,6 +38,11 @@ function getHeader($titulo){
         <script src="js/bootstrap.min.js"  type="text/javascript"></script>
         <script src="../Controlador/js/ajax.js" type="text/javascript"></script>
         <?php echo $script; ?>
+        <style>
+            .navbar-brand img{
+                max-height: 100px;
+            }
+        </style>
     </head>
     <body>
         <div class="templatemo-top-bar" id="templatemo-top">

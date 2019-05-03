@@ -1361,7 +1361,7 @@ class Inicio extends CI_Controller {
             $m="";$o=2;$con=false;$sw="error";$swh="Error";$ref=0;
             if ($idu) {
                 if ($this->isAdmin($idu)) {
-                    $ref=$this->input->post('ref');
+                    $refLib=$this->input->post('ref');
                     if($this->validar($ref)){
                         $con=true;
                     }                 

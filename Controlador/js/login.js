@@ -4,7 +4,7 @@ $(document).ready(function () {
             login:function(){
             usuario = $("#usuario").val();
             password = $("#password").val();
-
+            $("#loading").fadeIn();
             if(usuario === "" || password === ""){
                 //location.href = "Vista/admin.html";
                 alert("El usuario y la contraseña son obligatorios");
@@ -15,10 +15,12 @@ $(document).ready(function () {
                     type: "post",
                     data: {us:usuario,ps:password},
                     success: function (response) {
-                        $.sic.respoder(response,usuario);
+                        $("#loading").fadeOut();
+                        setTimeout(function() {$.sic.respoder(response,usuario);}, 1000);
                     },
                     error: function (xhr, req, err) {
-                        $.sic.respoder("Error en la petición "+err,"");
+                        $("#loading").fadeOut();
+                        setTimeout(function() {$.sic.respoder("Error en la petición "+err,"");}, 1000);
                     }
                 });
             }
